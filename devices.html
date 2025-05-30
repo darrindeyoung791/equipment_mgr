@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>设备录入与编辑</title>
+  </head>
+  <body>
+    <h1>设备录入与编辑</h1>
+
+    <form id="device-form">
+      <label for="device_id">设备ID（编辑时填写）:</label>
+      <input
+        type="number"
+        id="device_id"
+        name="device_id"
+        placeholder="仅编辑时填写"
+      /><br /><br />
+
+      <label for="device_name">设备名称:</label>
+      <input
+        type="text"
+        id="device_name"
+        name="device_name"
+        required
+      /><br /><br />
+
+      <label for="model">型号:</label>
+      <input type="text" id="model" name="model" required /><br /><br />
+
+      <label for="purchase_date">购入时间:</label>
+      <input
+        type="date"
+        id="purchase_date"
+        name="purchase_date"
+        required
+      /><br /><br />
+
+      <label for="price">价格:</label>
+      <input
+        type="number"
+        step="0.01"
+        id="price"
+        name="price"
+        required
+      /><br /><br />
+
+      <label for="status">状态:</label>
+      <select id="status" name="status" required>
+        <option value="1">正常</option>
+        <option value="2">需要维修</option>
+        <option value="3">维修中</option>
+        <option value="4">报废</option></select
+      ><br /><br />
+
+      <label for="lab">所属实验室:</label>
+      <input type="text" id="lab" name="lab" required /><br /><br />
+
+      <label for="can_borrow">是否可借用:</label>
+      <select id="can_borrow" name="can_borrow" required>
+        <option value="1">是</option>
+        <option value="0">否</option></select
+      ><br /><br />
+
+      <button type="submit">提交</button>
+    </form>
+
+    <script>
+      document
+        .getElementById("device-form")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          const formData = new FormData(event.target);
+          const data = Object.fromEntries(formData.entries());
+
+          const url = data.device_id ? "/api/devices/edit" : "/api/devices/add"; // 根据是否有设备ID选择API
+          const method = data.device_id ? "PUT" : "POST";
+
+          try {
+            const response = await fetch(url, {
+              method: method,
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+            alert(result.message || "操作成功");
+          } catch (error) {
+            console.error("提交失败:", error);
+            alert("提交失败，请检查网络或联系管理员");
+          }
+        });
+    </script>
+  </body>
+</html>

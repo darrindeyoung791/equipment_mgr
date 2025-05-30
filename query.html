@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>设备查询</title>
+  </head>
+  <body>
+    <h1>设备查询</h1>
+
+    <form id="query-form">
+      <label for="device_name">设备名称:</label>
+      <input type="text" id="device_name" name="device_name" /><br /><br />
+
+      <label for="model">型号:</label>
+      <input type="text" id="model" name="model" /><br /><br />
+
+      <label for="status">状态:</label>
+      <select id="status" name="status">
+        <option value="">全部</option>
+        <option value="1">正常</option>
+        <option value="2">需要维修</option>
+        <option value="3">维修中</option>
+        <option value="4">报废</option></select
+      ><br /><br />
+
+      <label for="lab">所属实验室:</label>
+      <input type="text" id="lab" name="lab" /><br /><br />
+
+      <button type="submit">查询</button>
+    </form>
+
+    <table border="1">
+      <thead>
+        <tr>
+          <th>设备ID</th>
+          <th>设备名称</th>
+          <th>型号</th>
+          <th>购入时间</th>
+          <th>价格</th>
+          <th>状态</th>
+          <th>所属实验室</th>
+          <th>是否可借用</th>
+        </tr>
+      </thead>
+      <tbody id="query-results">
+        <!-- 查询结果将通过JavaScript动态加载 -->
+      </tbody>
+    </table>
+
+    <script>
+      document
+        .getElementById("query-form")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          const formData = new FormData(event.target);
+          const queryParams = new URLSearchParams(formData).toString();
+
+          try {
+            const response = await fetch(`/api/devices/query?${queryParams}`);
+            const devices = await response.json();
+
+            const resultsTable = document.getElementById("query-results");
+            resultsTable.innerHTML = ""; // 清空表格内容
+
+            devices.forEach((device) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                        <td>${device.device_id}</td>
+                        <td>${device.device_name}</td>
+                        <td>${device.model}</td>
+                        <td>${device.purchase_date}</td>
+                        <td>${device.price}</td>
+                        <td>${device.status}</td>
+                        <td>${device.lab}</td>
+                        <td>${device.can_borrow === 1 ? "是" : "否"}</td>
+                    `;
+              resultsTable.appendChild(row);
+            });
+          } catch (error) {
+            console.error("查询失败:", error);
+            alert("查询失败，请检查网络或联系管理员");
+          }
+        });
+    </script>
+  </body>
+</html>
