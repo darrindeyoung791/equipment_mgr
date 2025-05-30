@@ -2,6 +2,9 @@
 CREATE DATABASE IF NOT EXISTS equipment_mgr;
 USE equipment_mgr;
 
+-- 修改数据库字符集为 UTF-8
+ALTER DATABASE equipment_mgr CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- 创建 users 表
 CREATE TABLE IF NOT EXISTS users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -25,7 +28,7 @@ CREATE TABLE IF NOT EXISTS devices (
     status INT NOT NULL,
     lab VARCHAR(100) NOT NULL,
     can_borrow INT NOT NULL
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- 创建 borrow_records 表
 CREATE TABLE IF NOT EXISTS borrow_records (
@@ -59,3 +62,18 @@ CREATE TABLE IF NOT EXISTS logs (
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+
+-- 修改 devices 表字符集为 UTF-8
+ALTER TABLE devices CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- 修改 users 表字符集为 UTF-8
+ALTER TABLE users CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- 修改 borrow_records 表字符集为 UTF-8
+ALTER TABLE borrow_records CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- 修改 approval_records 表字符集为 UTF-8
+ALTER TABLE approval_records CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- 修改 logs 表字符集为 UTF-8
+ALTER TABLE logs CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

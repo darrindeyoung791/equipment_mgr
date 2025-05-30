@@ -11,22 +11,12 @@
 
     <form id="query-form">
       <label for="device_name">设备名称:</label>
-      <input type="text" id="device_name" name="device_name" /><br /><br />
-
-      <label for="model">型号:</label>
-      <input type="text" id="model" name="model" /><br /><br />
-
-      <label for="status">状态:</label>
-      <select id="status" name="status">
-        <option value="">全部</option>
-        <option value="1">正常</option>
-        <option value="2">需要维修</option>
-        <option value="3">维修中</option>
-        <option value="4">报废</option></select
-      ><br /><br />
-
-      <label for="lab">所属实验室:</label>
-      <input type="text" id="lab" name="lab" /><br /><br />
+      <input
+        type="text"
+        id="device_name"
+        name="device_name"
+        required
+      /><br /><br />
 
       <button type="submit">查询</button>
     </form>
@@ -55,15 +45,29 @@
         .addEventListener("submit", async (event) => {
           event.preventDefault();
 
-          const formData = new FormData(event.target);
-          const queryParams = new URLSearchParams(formData).toString();
+          const deviceName = document
+            .getElementById("device_name")
+            .value.trim();
+          if (!deviceName) {
+            alert("请输入设备名称！");
+            return;
+          }
 
           try {
-            const response = await fetch(`/api/devices/query?${queryParams}`);
+            const response = await fetch(
+              `/api/devices/query?device_name=${encodeURIComponent(deviceName)}` // 确保正确编码
+            );
             const devices = await response.json();
 
             const resultsTable = document.getElementById("query-results");
             resultsTable.innerHTML = ""; // 清空表格内容
+
+            if (devices.length === 0) {
+              const row = document.createElement("tr");
+              row.innerHTML = `<td colspan="8" style="text-align: center;">未找到相关设备</td>`;
+              resultsTable.appendChild(row);
+              return;
+            }
 
             devices.forEach((device) => {
               const row = document.createElement("tr");
