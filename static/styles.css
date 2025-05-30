@@ -1,0 +1,174 @@
+:root {
+    --primary-color: rgb(66 94 145);
+    --on-primary: rgb(255 255 255);
+    --primary-container: rgb(215 226 255);
+    --on-primary-container: rgb(41 70 119);
+    --secondary-color: rgb(86 94 113);
+    --on-secondary: rgb(255 255 255);
+    --secondary-container: rgb(218 226 249);
+    --on-secondary-container: rgb(62 71 89);
+    --error-color: rgb(186 26 26);
+    --on-error: rgb(255 255 255);
+    --surface: rgb(249 249 255);
+    --on-surface: rgb(26 28 32);
+    --outline: rgb(116 119 127);
+    --surface-variant: rgb(224 226 236);
+    --on-surface-variant: rgb(68 71 78);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--surface);
+    color: var(--on-surface);
+    line-height: 1.5;
+}
+
+.screen {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* 密码验证界面样式 */
+.auth-container {
+    max-width: 600px;
+    margin: auto;
+    padding: 2rem;
+    text-align: center;
+}
+
+.logo {
+    margin-bottom: 2rem;
+}
+
+.logo .material-icons {
+    font-size: 3rem;
+    color: var(--primary-color);
+}
+
+.logo h1 {
+    margin-top: 1rem;
+    font-weight: 500;
+}
+
+.text-field {
+    position: relative;
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.text-field input {
+    width: 100%;
+    padding: 1rem 1rem 1rem 0.75rem;
+    font-size: 1rem;
+    border: 1px solid var(--outline);
+    border-radius: 4px;
+    background-color: transparent;
+    transition: border 0.2s;
+    padding-right: 2.5rem;
+}
+
+.text-field input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.text-field label {
+    position: absolute;
+    left: 0.75rem;
+    top: 1rem;
+    color: var(--on-surface-variant);
+    transition: all 0.2s;
+    pointer-events: none;
+    background-color: var(--surface);
+    padding: 0 0.25rem;
+}
+
+.text-field input:focus+label,
+.text-field input:not(:placeholder-shown)+label {
+    top: -0.5rem;
+    left: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--primary-color);
+}
+
+.visibility {
+    position: absolute;
+    right: 0.75rem;
+    top: 1rem;
+    cursor: pointer;
+    color: var(--on-surface-variant);
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 100px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.1px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    gap: 0.5rem;
+}
+
+.button.primary {
+    background-color: var(--primary-color);
+    color: var(--on-primary);
+}
+
+.button.primary:hover {
+    background-color: rgb(41 70 119); /* 使用 on-primary-container 作为 hover 状态 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.button.secondary {
+    background-color: var(--secondary-container);
+    color: var(--on-secondary-container);
+}
+
+.button.secondary:hover {
+    background-color: rgb(224 226 236); /* 使用 surface-variant 作为 hover 状态 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.error-message {
+    color: var(--error-color);
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    min-height: 1.25rem;
+}
+
+.attempts-counter {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--on-surface-variant);
+}
+
+.sign-up {
+    margin-top: 1rem;
+    font-size: 0.875rem;
+}
+
+.sign-up a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.sign-up a:hover {
+    text-decoration: underline;
+}

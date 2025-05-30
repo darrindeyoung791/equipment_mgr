@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实验设备管理系统 - 登录</title>
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+    <div id="login-app" style="min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+        <div class="auth-container">
+            <div class="logo">
+                <img src="/static/favicon.svg" alt="logo" style="width: 48px; height: 48px;">
+                <h1>实验设备管理系统</h1>
+            </div>
+            <div class="auth-form">
+                <div class="text-field">
+                    <input type="text" id="username" placeholder=" " inputmode="ascii" lang="en" autocomplete="off" autocapitalize="off" enterkeyhint="next">
+                    <label for="username">输入用户名</label>
+                </div>
+                <div class="text-field">
+                    <input type="password" id="password" placeholder=" " inputmode="ascii" lang="en" autocomplete="off">
+                    <label for="password">输入访问密码</label>
+                    <span class="material-icons visibility" id="toggle-password">visibility_off</span>
+                </div>
+                <button id="login-btn" class="button primary">
+                    <span class="material-icons">login</span>
+                    <span>进入系统</span>
+                </button>
+                <div id="sign-up" class="sign-up">
+                    <a href="#" id="sign-up-link">注册用户</a>
+                </div>
+                <div id="error-message" class="error-message"></div>
+                <div id="attempts-counter" class="attempts-counter"></div>
+            </div>
+        </div>
+    </div>
+    <script src="/static/login.js"></script>
+</body>
+</html>
