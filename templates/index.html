@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实验设备管理系统</title>
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="screen">
+        <header class="top-bar">
+            <div class="top-bar-start">
+                <img src="/static/favicon.svg" alt="logo" class="header-logo">
+                <h1>实验设备管理系统<span id="user-type-label"></span></h1>
+            </div>
+            <div class="top-bar-end">
+                <span class="user-info">
+                    <span class="material-icons">account_circle</span>
+                    <span id="username"></span>
+                </span>
+                <button id="logout-btn" class="button secondary">
+                    <span class="material-icons">logout</span>
+                    <span>退出</span>
+                </button>
+            </div>
+        </header>
+        
+        <main class="card-grid">
+            <a href="/query" class="card" data-role="all">
+                <span class="material-icons card-icon">search</span>
+                <h2>查询</h2>
+                <p>查看设备和借用记录</p>
+            </a>
+            <a href="/borrow" class="card" data-role="all">
+                <span class="material-icons card-icon">swap_horiz</span>
+                <h2>借用申请/归还</h2>
+                <p>申请借用或归还设备</p>
+            </a>
+            <a href="/devices" class="card" data-role="staff">
+                <span class="material-icons card-icon">engineering</span>
+                <h2>设备编辑</h2>
+                <p>管理设备信息</p>
+            </a>
+            <a href="/review" class="card" data-role="staff">
+                <span class="material-icons card-icon">fact_check</span>
+                <h2>审批</h2>
+                <p>处理借用申请</p>
+            </a>
+        </main>
+    </div>
+    <script src="/static/index.js"></script>
+</body>
+</html>

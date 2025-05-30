@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实验设备管理系统 - 注册</title>
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+    <div id="signup-app" style="min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+        <div class="auth-container">
+            <div class="logo">
+                <img src="/static/favicon.svg" alt="logo" style="width: 48px; height: 48px;">
+                <h1>实验设备管理系统</h1>
+            </div>
+            <div class="auth-form">
+                <div class="text-field">
+                    <input type="text" id="username" placeholder=" " inputmode="ascii" lang="en" autocomplete="off" autocapitalize="off" maxlength="100" required>
+                    <label for="username">设置用户名</label>
+                </div>
+                <div class="text-field">
+                    <input type="text" id="name" placeholder=" " maxlength="100" required>
+                    <label for="name">真实姓名</label>
+                </div>
+                <div class="text-field select-field">
+                    <select id="gender" required>
+                        <option value="" disabled selected></option>
+                        <option value="1">男</option>
+                        <option value="2">女</option>
+                    </select>
+                    <label for="gender">性别</label>
+                </div>
+                <div class="text-field">
+                    <input type="text" id="department" placeholder=" " maxlength="100" required>
+                    <label for="department">所属院系</label>
+                </div>
+                <div class="text-field">
+                    <input type="password" id="password" placeholder=" " inputmode="ascii" lang="en" autocomplete="off" maxlength="100" required>
+                    <label for="password">设置密码</label>
+                    <span class="material-icons visibility" id="toggle-password">visibility_off</span>
+                </div>
+                <div class="text-field">
+                    <input type="password" id="confirm-password" placeholder=" " inputmode="ascii" lang="en" autocomplete="off" maxlength="100" required>
+                    <label for="confirm-password">确认密码</label>
+                    <span class="material-icons visibility" id="toggle-confirm-password">visibility_off</span>
+                </div>
+                <button id="signup-btn" class="button primary">
+                    <span class="material-icons">person_add</span>
+                    <span>创建账号</span>
+                </button>
+                <div id="login-link" class="login-link">
+                    <a href="/">已有账号？返回登录...</a>
+                </div>
+                <div id="error-message" class="error-message"></div>
+            </div>
+        </div>
+    </div>
+    <script src="/static/sign_up.js"></script>
+</body>
+</html>

@@ -29,8 +29,11 @@ body {
     line-height: 1.5;
 }
 
+/*
+ * Common Layout Styles
+ * ==================
+ */
 .screen {
-    width: 100%;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -40,7 +43,11 @@ body {
     display: none !important;
 }
 
-/* 密码验证界面样式 */
+/*
+ * Authentication Pages Styles
+ * =========================
+ * Shared styles for login and signup pages
+ */
 .auth-container {
     max-width: 600px;
     margin: auto;
@@ -62,6 +69,11 @@ body {
     font-weight: 500;
 }
 
+/*
+ * Form Components
+ * ==============
+ * Text fields, buttons and form-related components
+ */
 .text-field {
     position: relative;
     margin-bottom: 1.5rem;
@@ -153,6 +165,10 @@ body {
     min-height: 1.25rem;
 }
 
+/*
+ * Login Page Specific
+ * =================
+ */
 .attempts-counter {
     margin-top: 0.5rem;
     font-size: 0.75rem;
@@ -171,4 +187,255 @@ body {
 
 .sign-up a:hover {
     text-decoration: underline;
+}
+
+
+.login-link {
+    margin-top: 1rem;
+    font-size: 0.875rem;
+}
+
+.login-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+/*
+ * Browser Overrides
+ * ===============
+ * Hide native browser UI elements
+ */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}
+
+input[type="password"]::-webkit-contacts-auto-fill-button,
+input[type="password"]::-webkit-credentials-auto-fill-button {
+    visibility: hidden;
+    display: none !important;
+    pointer-events: none;
+    height: 0;
+    width: 0;
+    margin: 0;
+}
+
+.radio-field {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.radio-label {
+    position: static !important;
+    background: none !important;
+    color: var(--on-surface-variant);
+}
+
+.radio-group {
+    display: flex;
+    gap: 1rem;
+}
+
+.radio-group input[type="radio"] {
+    margin-right: 0.25rem;
+}
+
+.select-field select {
+    width: 100%;
+    padding: 1rem 1rem 1rem 0.75rem;
+    font-size: 1rem;
+    border: 1px solid var(--outline);
+    border-radius: 4px;
+    background-color: transparent;
+    transition: border 0.2s;
+    appearance: none;
+    cursor: pointer;
+}
+
+.select-field {
+    position: relative;
+}
+
+.select-field::after {
+    content: 'expand_more';
+    font-family: 'Material Icons';
+    position: absolute;
+    right: 0.75rem;
+    top: 1rem;
+    color: var(--on-surface-variant);
+    pointer-events: none;
+}
+
+.select-field select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.select-field select:focus + label,
+.select-field select:not(:placeholder-shown) + label {
+    top: -0.5rem;
+    left: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--primary-color);
+}
+
+/* 移除旧的单选框样式 */
+.radio-field,
+.radio-label,
+.radio-group {
+    display: none;
+}
+
+/*
+ * Main Page Styles
+ * ==============
+ */
+.top-bar {
+    background-color: var(--primary-color);
+    color: var(--on-primary);
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.top-bar-start {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.top-bar-end {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-left: auto;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+@media (max-width: 480px) {
+    .top-bar {
+        flex-wrap: nowrap;
+    }
+    
+    .top-bar-end {
+        gap: 0.75rem;
+    }
+    
+    .user-info span:last-child {
+        display: none;  /* 在非常窄的屏幕上隐藏用户名文本 */
+    }
+
+    /* 确保移动端下按钮也不会缩小 */
+    .top-bar .button.secondary {
+        flex-shrink: 0;
+    }
+}
+
+.top-bar h1 {
+    font-size: clamp(1.2rem, 4vw, 1.5rem);
+    white-space: nowrap;
+}
+
+.card-grid {
+    flex: 1;
+    padding: clamp(1rem, 4vw, 2rem);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: clamp(1rem, 4vw, 2rem);
+    max-width: 1200px;
+    margin: auto;
+    width: 100%;
+    place-content: center;  /* 垂直和水平居中 */
+    align-content: center;
+}
+
+@media (max-width: 480px) {
+    .top-bar-end {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .card {
+        padding: 1.5rem;
+    }
+}
+
+.card {
+    max-width: 320px;
+    margin: 0 auto;  /* 确保卡片在其网格单元格中居中 */
+    width: 100%;
+    background-color: var(--surface);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--outline);
+    text-decoration: none;
+    color: var(--on-surface);
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.card:hover {
+    background-color: var(--primary-container);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-icon {
+    font-size: 48px;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.card h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+.card p {
+    margin: 0;
+    color: var(--on-surface-variant);
+    font-size: 0.875rem;
+}
+
+.header-logo {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1);  /* 将图标改为白色 */
+}
+
+.user-info {
+    color: var(--on-primary);
+}
+
+.user-info .material-icons {
+    font-size: 24px;
+    color: var(--on-primary);
+}
+
+.top-bar .button.secondary {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--on-primary);
+    min-width: 90px;  /* 添加最小宽度 */
+    white-space: nowrap;  /* 防止文字换行 */
+}
+
+.top-bar .button.secondary:hover {
+    background-color: rgba(255, 255, 255, 0.2);
 }

@@ -156,3 +156,81 @@ pip install -r requirements.txt
 
 当前开发环境是 Windows 11 23H2 下的 Python 3.9，如果在其他环境中部署出现错误，请提 issue 或者咨询 AI。
 
+
+
+### 二、配置 MySQL 数据库
+
+输入以下代码创建数据库：
+
+```sql
+-- 创建数据库
+CREATE DATABASE IF NOT EXISTS equipment_mgr;
+USE equipment_mgr;
+
+-- 创建 users 表
+CREATE TABLE IF NOT EXISTS users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    pswd_hash VARCHAR(255) NOT NULL,
+    user_type INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    gender INT NOT NULL,
+    dpt VARCHAR(100),
+    title VARCHAR(100),
+    status INT NOT NULL
+);
+
+-- 创建 devices 表
+CREATE TABLE IF NOT EXISTS devices (
+    device_id INT AUTO_INCREMENT PRIMARY KEY,
+    device_name VARCHAR(100) NOT NULL,
+    model VARCHAR(100) NOT NULL,
+    purchase_date DATE NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    status INT NOT NULL,
+    lab VARCHAR(100) NOT NULL,
+    can_borrow INT NOT NULL
+);
+
+-- 创建 borrow_records 表
+CREATE TABLE IF NOT EXISTS borrow_records (
+    record_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    device_id INT NOT NULL,
+    borrow_date DATE NOT NULL,
+    return_date DATE,
+    approval_status INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (device_id) REFERENCES devices(device_id)
+);
+
+-- 创建 approval_records 表
+CREATE TABLE IF NOT EXISTS approval_records (
+    approval_id INT AUTO_INCREMENT PRIMARY KEY,
+    record_id INT NOT NULL,
+    approver_id INT NOT NULL,
+    approval_date DATE NOT NULL,
+    approval_comment TEXT,
+    FOREIGN KEY (record_id) REFERENCES borrow_records(record_id),
+    FOREIGN KEY (approver_id) REFERENCES users(user_id)
+);
+
+-- 创建 logs 表
+CREATE TABLE IF NOT EXISTS logs (
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    action INT NOT NULL,
+    details TEXT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+```
+
+添加用户：
+
+```sql
+CREATE USER 'equipment_mgr'@'localhost' IDENTIFIED BY 'your_password_here';
+GRANT ALL PRIVILEGES ON equipment_mgr.* TO 'equipment_mgr'@'localhost';
+FLUSH PRIVILEGES;
+```
+
