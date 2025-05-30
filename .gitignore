@@ -1,0 +1,29 @@
+# Python 开发
+__pycache__/
+*.py[cod]
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# 环境变量
+.env
+.env.local
+.secrets
+
+# 数据库相关
+*.db
+*.sqlite3
+
+# IDE 文件
+.vscode/
+.idea/
+*.swp
+
+# 临时文件
+*.log
+*.tmp
+
+# 静态文件（如果已编译）
+static/dist/
