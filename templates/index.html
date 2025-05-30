@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12 text-center mb-4">
+            <h2>实验设备管理系统</h2>
+            <p class="lead">选择您需要使用的功能模块</p>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <!-- 设备借还功能 -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">设备借还</h5>
+                    <p class="card-text">申请借用或归还实验设备</p>
+                    <a href="{{ url_for('borrow_and_return') }}" class="btn btn-primary">进入</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 借用审批功能 -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">借用审批</h5>
+                    <p class="card-text">审批学生的设备借用申请</p>
+                    <a href="{{ url_for('review') }}" class="btn btn-primary">进入</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 设备管理功能 -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">设备管理</h5>
+                    <p class="card-text">管理实验室设备信息</p>
+                    <a href="#" class="btn btn-primary">进入</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

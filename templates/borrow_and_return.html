@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <h3>可借用设备</h3>
+            <div class="device-list">
+                {% for device in available_devices %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ device.device_name }}</h5>
+                        <p class="card-text">
+                            型号：{{ device.model }}<br>
+                            实验室：{{ device.lab }}
+                        </p>
+                        <form action="{{ url_for('apply_borrow', device_id=device.device_id) }}" method="post">
+                            <button type="submit" class="btn btn-primary">申请借用</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h3>已借用设备</h3>
+            <div class="device-list">
+                {% for device, record in borrowed_devices %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ device.device_name }}</h5>
+                        <p class="card-text">
+                            型号：{{ device.model }}<br>
+                            实验室：{{ device.lab }}<br>
+                            借用日期：{{ record.borrow_date }}<br>
+                            状态：
+                            {% if record.approval_status == 1 %}
+                                <span class="badge bg-warning">待审批</span>
+                            {% elif record.approval_status == 2 %}
+                                <span class="badge bg-success">已批准</span>
+                            {% else %}
+                                <span class="badge bg-danger">已拒绝</span>
+                            {% endif %}
+                        </p>
+                        {% if record.approval_status == 2 %}
+                        <form action="{{ url_for('return_device', device_id=device.device_id) }}" method="post">
+                            <button type="submit" class="btn btn-success">归还设备</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

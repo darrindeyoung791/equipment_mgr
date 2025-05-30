@@ -1,0 +1,86 @@
+.navbar {
+    margin-bottom: 20px;
+}
+
+.card {
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card-title {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.alert {
+    margin-bottom: 15px;
+}
+
+.device-list {
+    margin-top: 2rem;
+}
+
+.device-card {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+}
+
+.device-info {
+    margin-bottom: 10px;
+}
+
+.device-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.status-badge {
+    padding: 0.25em 0.6em;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+}
+
+.status-pending {
+    background-color: #ffd700;
+    color: #000;
+}
+
+.status-approved {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.status-rejected {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.review-form {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.table th {
+    background-color: #f8f9fa;
+}
+
+.container {
+    padding-top: 20px;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.btn-primary {
+    margin-right: 10px;
+}
