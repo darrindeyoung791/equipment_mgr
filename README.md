@@ -103,5 +103,56 @@ timestamp        TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 操作发生的时间
 
 
 
+## 网页设计
 
+```mermaid
+graph TD
+登录页-->注册页
+注册页-->主页
+登录页-->主页
+主页-->查询
+主页-->借用申请/归还
+主页-->设备编辑
+主页-->审批
+查询-->借用记录
+查询-->设备情况
+```
+
+
+
+| **中文名**    | **英文名**          |
+| ------------- | ------------------- |
+| 登录页        | `login`             |
+| 注册页        | `sign_in`           |
+| 主页          | `index`             |
+| 查询          | `query`             |
+| 借用申请/归还 | `borrow_and_return` |
+| 设备编辑      | `devices`           |
+| 审批          | `review`            |
+| 借用记录      | `borrow_log`        |
+| 设备情况      | `device_status`     |
+
+
+
+## 部署运行
+
+### 一、配置 Python 虚拟环境
+
+推荐使用虚拟环境进行部署：
+
+```bash
+# 创建虚拟环境
+python -m venv venv
+
+# 激活虚拟环境
+source venv/bin/activate  # Linux/Mac
+# 或
+.\\venv\scripts\activate  # Windows PowerShell
+
+# 更新pip并安装依赖
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+当前开发环境是 Windows 11 23H2 下的 Python 3.9，如果在其他环境中部署出现错误，请提 issue 或者咨询 AI。
 
