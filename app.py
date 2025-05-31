@@ -53,11 +53,11 @@ def query():
     return render_template('query.html')
 
 # 申请借用页路由
-@app.route('/borrow')
-def borrow():
+@app.route('/borrow_and_return')
+def borrow_and_return():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    return render_template('borrow.html')
+    return render_template('borrow_and_return.html')
 
 # 申请审核页路由
 @app.route('/review')

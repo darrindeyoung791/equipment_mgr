@@ -361,6 +361,20 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
     min-height: calc(100vh - 64px);
 }
 
+.card-grid {
+    padding: clamp(1rem, 4vw, 2rem);
+    margin-top: 32px;  /* 添加固定的上边距 */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: clamp(1rem, 4vw, 2rem);
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    place-content: center;
+    align-content: start;  /* 改为从顶部开始对齐，而不是居中 */
+}
+
 .sidebar {
     width: 256px;
     background: var(--surface);

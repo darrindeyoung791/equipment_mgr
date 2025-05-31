@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const logoutButton = document.getElementById('logout-btn');
     const deviceCard = document.querySelector('a[href="/devices"]');
     const reviewCard = document.querySelector('a[href="/review"]');
+    const borrowCard = document.querySelector('a[href="/borrow_and_return"]');
 
     // 获取用户信息并控制卡片显示
     fetch('/api/user-info')
