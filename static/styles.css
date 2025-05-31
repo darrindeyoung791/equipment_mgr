@@ -361,20 +361,6 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
     min-height: calc(100vh - 64px);
 }
 
-.card-grid {
-    padding: clamp(1rem, 4vw, 2rem);
-    margin-top: 32px;  /* 添加固定的上边距 */
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-    gap: clamp(1rem, 4vw, 2rem);
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-    place-content: center;
-    align-content: start;  /* 改为从顶部开始对齐，而不是居中 */
-}
-
 .sidebar {
     width: 256px;
     background: var(--surface);
@@ -631,7 +617,6 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
 .notifications-container {
     max-width: 960px;
     margin: 0 auto;
-    padding: 1rem;
 }
 
 .notification-item {
@@ -643,6 +628,7 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
     display: flex;
     align-items: flex-start;
     gap: 1rem;
+    transition: all 0.2s;
 }
 
 .notification-item.unread {
@@ -651,16 +637,52 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
 }
 
 .notification-icon {
+    font-size: 24px;
     color: var(--primary-color);
 }
 
 .notification-content {
     flex: 1;
+    margin: 0 1rem;
 }
 
-.notification-time {
+.notification-title {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.notification-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     color: var(--on-surface-variant);
     font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+.notification-type {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background: var(--surface-variant);
+    font-size: 0.75rem;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: var(--on-surface-variant);
+}
+
+.empty-state .material-icons {
+    font-size: 48px;
+    margin-bottom: 1rem;
+}
+
+.empty-state button {
+    margin-top: 1rem;
 }
 
 .nav-link {
@@ -674,4 +696,51 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
 
 .nav-link:hover {
     background: rgba(255, 255, 255, 0.1);
+}
+
+.content-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.content-actions .button {
+    min-width: 120px;
+}
+
+.notification-section {
+    margin-bottom: 2rem;
+}
+
+.notification-section h3 {
+    font-size: 1rem;
+    color: var(--on-surface-variant);
+    margin: 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--outline);
+}
+
+.mark-read-btn {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 50%;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.mark-read-btn:hover {
+    background-color: var(--primary-container);
+}
+
+.mark-read-btn .material-icons {
+    font-size: 20px;
+}
+
+.notification-item {
+    display: flex;
+    align-items: flex-start;
 }

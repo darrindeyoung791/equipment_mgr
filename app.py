@@ -207,5 +207,22 @@ def api_mark_all_read():
     
     return jsonify({'success': True})
 
+@app.route('/api/notifications/mark-read/<int:notification_id>', methods=['POST'])
+def api_mark_notification_read(notification_id):
+    if 'user_id' not in session:
+        return jsonify({'success': False})
+        
+    cursor = mysql.connection.cursor()
+    cursor.execute('''
+        UPDATE notifications 
+        SET read_status = 1 
+        WHERE notification_id = %s AND user_id = %s
+    ''', (notification_id, session['user_id']))
+    
+    mysql.connection.commit()
+    cursor.close()
+    
+    return jsonify({'success': True})
+
 if __name__ == '__main__':
     app.run(debug=True)

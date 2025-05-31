@@ -18,12 +18,24 @@
     <div class="notifications-container">
         <div class="content-header">
             <h2>通知列表</h2>
-            <button id="mark-all-read" class="button secondary">
-                <span class="material-icons">done_all</span>
-                <span>全部标为已读</span>
-            </button>
+            <div class="content-actions">
+                <button id="refresh-btn" class="button secondary">
+                    <span class="material-icons">refresh</span>
+                    <span>刷新</span>
+                </button>
+                <button id="mark-all-read" class="button secondary">
+                    <span class="material-icons">done_all</span>
+                    <span>全部标为已读</span>
+                </button>
+            </div>
         </div>
-        <div id="notifications-list"></div>
+        <div id="notifications-content" class="content-area">
+            <div id="notifications-list"></div>
+            <div id="empty-state" class="empty-state hidden">
+                <span class="material-icons">done_all</span>
+                <p>一切就绪，没有未读通知</p>
+            </div>
+        </div>
     </div>
     {% endblock %}
 
