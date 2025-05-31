@@ -29,6 +29,13 @@ def index():
         return redirect(url_for('login'))
     return render_template('index.html')
 
+# 通知页路由
+@app.route('/notifications')
+def notifications():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('notifications.html')
+
 # API: 登录验证
 @app.route('/api/login', methods=['POST'])
 def api_login():
@@ -129,6 +136,43 @@ def api_user_info():
 @app.route('/api/logout', methods=['POST'])
 def api_logout():
     session.clear()
+    return jsonify({'success': True})
+
+@app.route('/api/notifications')
+def api_notifications():
+    if 'user_id' not in session:
+        return jsonify({'success': False})
+        
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('''
+        SELECT * FROM notifications 
+        WHERE user_id = %s 
+        ORDER BY created_at DESC
+    ''', (session['user_id'],))
+    
+    notifications = cursor.fetchall()
+    cursor.close()
+    
+    return jsonify({
+        'success': True,
+        'notifications': notifications
+    })
+
+@app.route('/api/notifications/mark-all-read', methods=['POST'])
+def api_mark_all_read():
+    if 'user_id' not in session:
+        return jsonify({'success': False})
+        
+    cursor = mysql.connection.cursor()
+    cursor.execute('''
+        UPDATE notifications 
+        SET read_status = 1 
+        WHERE user_id = %s
+    ''', (session['user_id'],))
+    
+    mysql.connection.commit()
+    cursor.close()
+    
     return jsonify({'success': True})
 
 if __name__ == '__main__':

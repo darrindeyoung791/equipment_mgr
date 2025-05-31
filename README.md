@@ -28,8 +28,10 @@
     1. 学生申请使用
     2. 教师审批
     3. 学生归还（不经过审批）
-
-
+4. 通知系统：
+    1. 借用申请审批结果通知
+    2. 设备归还提醒
+    3. 设备维修完成通知
 
 ## 数据库设计
 
@@ -101,7 +103,20 @@ details          TEXT,                           -- 操作详情，如具体更�
 timestamp        TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 操作发生的时间
 ```
 
+### 6. `notifications` 表
 
+> 存放系统通知
+
+```plaintext
+notification_id  INT AUTO_INCREMENT PRIMARY KEY, -- 通知唯一标识
+user_id          INT NOT NULL,                   -- 接收通知的用户ID
+type            INT NOT NULL,                    -- 通知类型（1: 审批通过, 2: 审批拒绝, 3: 归还提醒, 4: 维修完成）
+content         TEXT NOT NULL,                   -- 通知内容
+related_id      INT,                            -- 相关记录ID（如借用记录ID）
+created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 通知创建时间
+read_status     INT NOT NULL DEFAULT 0,         -- 阅读状态（0: 未读, 1: 已读）
+FOREIGN KEY (user_id) REFERENCES users(user_id)
+```
 
 ## 网页设计
 
@@ -114,6 +129,7 @@ graph TD
 主页-->借用申请/归还
 主页-->设备编辑
 主页-->审批
+主页-->通知中心
 查询-->借用记录
 查询-->设备情况
 ```
@@ -131,6 +147,7 @@ graph TD
 | 审批          | `review`            |
 | 借用记录      | `borrow_log`        |
 | 设备情况      | `device_status`     |
+| 通知中心      | `notifications`     |
 
 
 
@@ -222,6 +239,18 @@ CREATE TABLE IF NOT EXISTS logs (
     action INT NOT NULL,
     details TEXT,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+-- 创建 notifications 表
+CREATE TABLE IF NOT EXISTS notifications (
+    notification_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    type INT NOT NULL,
+    content TEXT NOT NULL,
+    related_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    read_status INT NOT NULL DEFAULT 0,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 ```

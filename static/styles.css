@@ -439,3 +439,55 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
 .top-bar .button.secondary:hover {
     background-color: rgba(255, 255, 255, 0.2);
 }
+
+/*
+ * Notifications Styles
+ * ==================
+ */
+.notifications-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.notification-item {
+    background: var(--surface);
+    border: 1px solid var(--outline);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.notification-item.unread {
+    background: var(--primary-container);
+    border-color: var(--primary-color);
+}
+
+.notification-icon {
+    color: var(--primary-color);
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-time {
+    color: var(--on-surface-variant);
+    font-size: 0.875rem;
+}
+
+.nav-link {
+    color: var(--on-primary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    border-radius: 50%;
+}
+
+.nav-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
