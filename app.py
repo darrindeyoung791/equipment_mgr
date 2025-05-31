@@ -36,6 +36,38 @@ def notifications():
         return redirect(url_for('login'))
     return render_template('notifications.html')
 
+# 设备管理页路由
+@app.route('/devices')
+def devices():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    if session.get('user_type') == 1:  # 学生
+        return redirect(url_for('index'))
+    return render_template('devices.html')
+
+# 查询页路由
+@app.route('/query')
+def query():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('query.html')
+
+# 申请借用页路由
+@app.route('/borrow')
+def borrow():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('borrow.html')
+
+# 申请审核页路由
+@app.route('/review')
+def review():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    if session.get('user_type') == 1:  # 学生
+        return redirect(url_for('index'))
+    return render_template('review.html')
+
 # API: 登录验证
 @app.route('/api/login', methods=['POST'])
 def api_login():

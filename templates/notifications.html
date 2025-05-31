@@ -10,26 +10,25 @@
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <div class="screen">
-        <header class="top-bar">
-            <div class="top-bar-start">
-                <a href="/index" class="nav-link">
-                    <span class="material-icons">arrow_back</span>
-                </a>
-                <h1>通知中心</h1>
-            </div>
-            <div class="top-bar-end">
-                <button id="mark-all-read" class="button secondary">
-                    <span class="material-icons">done_all</span>
-                    <span>全部标为已读</span>
-                </button>
-            </div>
-        </header>
-        
-        <main class="notifications-container">
-            <div id="notifications-list"></div>
-        </main>
+    {% extends "layout.html" %}
+
+    {% block title %}通知中心 - 实验设备管理系统{% endblock %}
+
+    {% block content %}
+    <div class="notifications-container">
+        <div class="content-header">
+            <h2>通知列表</h2>
+            <button id="mark-all-read" class="button secondary">
+                <span class="material-icons">done_all</span>
+                <span>全部标为已读</span>
+            </button>
+        </div>
+        <div id="notifications-list"></div>
     </div>
+    {% endblock %}
+
+    {% block scripts %}
     <script src="/static/notifications.js"></script>
+    {% endblock %}
 </body>
 </html>

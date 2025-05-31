@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}实验设备管理系统{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="screen">
+        <header class="top-bar">
+            <div class="top-bar-start">
+                <img src="/static/favicon.svg" alt="logo" class="header-logo">
+                <h1>实验设备管理系统<span id="user-type-label"></span></h1>
+            </div>
+            <div class="top-bar-end">
+                <span class="user-info">
+                    <span class="material-icons">account_circle</span>
+                    <span id="username"></span>
+                </span>
+                <button id="logout-btn" class="button secondary">
+                    <span class="material-icons">logout</span>
+                    <span>退出</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="main-container">
+            <nav class="sidebar">
+                <div class="nav-items">
+                    <a href="/index" class="nav-item">
+                        <span class="material-icons">home</span>
+                        <span>主页</span>
+                    </a>
+                    <a href="/query" class="nav-item">
+                        <span class="material-icons">search</span>
+                        <span>查询</span>
+                    </a>
+                    <a href="/borrow" class="nav-item">
+                        <span class="material-icons">swap_horiz</span>
+                        <span>借用申请/归还</span>
+                    </a>
+                    <a href="/devices" class="nav-item" data-role="staff">
+                        <span class="material-icons">engineering</span>
+                        <span>设备编辑</span>
+                    </a>
+                    <a href="/review" class="nav-item" data-role="staff">
+                        <span class="material-icons">fact_check</span>
+                        <span>审批</span>
+                    </a>
+                    <a href="/notifications" class="nav-item">
+                        <span class="material-icons">notifications</span>
+                        <span>通知中心</span>
+                    </a>
+                </div>
+            </nav>
+
+            <main class="content-area">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+    <script src="/static/common.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
