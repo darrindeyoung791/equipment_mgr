@@ -37,4 +37,32 @@ document.addEventListener('DOMContentLoaded', function() {
     // 高亮当前页面对应的导航项
     const currentPath = window.location.pathname;
     document.querySelector(`.nav-item[href="${currentPath}"]`)?.classList.add('active');
+
+    // 添加菜单切换功能
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.querySelector('.sidebar-overlay');
+    
+    function toggleSidebar() {
+        sidebar.classList.toggle('open');
+        if (sidebar.classList.contains('open')) {
+            document.body.style.overflow = 'hidden';
+            overlay.classList.add('visible');
+        } else {
+            document.body.style.overflow = '';
+            overlay.classList.remove('visible');
+        }
+    }
+
+    menuToggle?.addEventListener('click', toggleSidebar);
+    overlay?.addEventListener('click', toggleSidebar);
+
+    // 在窗口调整大小时处理侧边栏状态
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 1024) {
+            sidebar?.classList.remove('open');
+            document.body.style.overflow = '';
+            overlay?.classList.remove('visible');
+        }
+    });
 });
