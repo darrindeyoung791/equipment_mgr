@@ -260,8 +260,8 @@ graph TD
 | 登录页               | `login`         | ✔️            |
 | 注册页               | `sign_up`       | ✔️            |
 | 主页                 | `index`         | ✔️            |
-| 申请借用             | `borrow`        | ❌            |
-| 归还                 | `return`        | ❌            |
+| 申请借用             | `borrow`        | ✔️            |
+| 归还                 | `return`        | ✔️            |
 | 通知中心             | `notifications` | ✔️            |
 | 查询与编辑（管理员） | `edit_devices`  | ❌            |
 | 审批（管理员）       | `review`        | ❌            |
