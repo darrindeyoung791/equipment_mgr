@@ -39,26 +39,29 @@
                         <span class="material-icons">home</span>
                         <span>主页</span>
                     </a>
-                    <a href="/query" class="nav-item">
-                        <span class="material-icons">search</span>
-                        <span>查询</span>
+                    <a href="/borrow" class="nav-item">
+                        <span class="material-icons">add_box</span>
+                        <span>借用申请</span>
                     </a>
-                    <a href="/borrow_and_return" class="nav-item">
-                        <span class="material-icons">swap_horiz</span>
-                        <span>借用申请/归还</span>
-                    </a>
-                    <a href="/devices" class="nav-item" data-role="staff">
-                        <span class="material-icons">engineering</span>
-                        <span>设备编辑</span>
-                    </a>
-                    <a href="/review" class="nav-item" data-role="staff">
-                        <span class="material-icons">fact_check</span>
-                        <span>审批</span>
+                    <a href="/return" class="nav-item">
+                        <span class="material-icons">inventory_2</span>
+                        <span>设备归还</span>
                     </a>
                     <a href="/notifications" class="nav-item">
                         <span class="material-icons">notifications</span>
                         <span>通知中心</span>
+                        <span class="notification-badge" id="notification-count" style="display: none;">0</span>
                     </a>
+                    {% if session.user_type != 1 %}
+                    <a href="/edit_devices" class="nav-item admin-only">
+                        <span class="material-icons">build</span>
+                        <span>设备管理</span>
+                    </a>
+                    <a href="/review" class="nav-item admin-only">
+                        <span class="material-icons">fact_check</span>
+                        <span>申请审批</span>
+                    </a>
+                    {% endif %}
                 </div>
             </nav>
 

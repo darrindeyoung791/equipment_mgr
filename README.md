@@ -1,37 +1,62 @@
-# 实验设备管理系统
+# 实验设备管理系统（MySQL+Flask）
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-一个用于管理实验设备的系统。使用MySQL数据库、Flask后端以及基于HTML、CSS和JavaScript构建的轻量级Web界面。
+一个用于管理实验设备的系统。使用MySQL数据库、Flask后端以及基于HTML、CSS和JavaScript构建的轻量级Web界面。能够实现多角色用户管理、设备按条件查询与操作、完成操作发送通知、审批等功能。
 
-## 功能
+## Contributors
+
+| <img src="https://avatars.githubusercontent.com/u/205942924?v=4" style="zoom:23%;" /> | [darrindeyoung791](https://github.com/darrindeyoung791) | 项目发起者，组长；<br />数据库结构设计；<br />网页界面设计；<br />版本管理；<br />文档维护。 |
+| :----------------------------------------------------------: | ------------------------------------------------------- | ------------------------------------------------------------ |
+| <img src="https://avatars.githubusercontent.com/u/155410580?s=130&v=4" style="zoom:25%;" /> | [ying8502](https://github.com/ying8502)                 | 参与者；<br />数据库结构设计；<br />网页架构设计。           |
+| <img src="https://avatars.githubusercontent.com/u/214098553?s=130&v=4" style="zoom:25%;" /> | [Frozentime3](https://github.com/Frozentime3)           | 参与者；<br />资料搜集；<br />文档维护。                     |
+
+
+
+## 预定功能
 
 1. 用户管理模块
     1. 多类型用户：
-        - 学生、教师、管理员
+        - 学生、~~教师~~、管理员
         - 注册与登录
+        
     2. 密码存储：加密存储，数据库存储哈希值而非明文
-    3. 用户信息管理：
+    
+    3. 用户信息管理（to do）：
         - 学生可以更新密码、联系方式、专业等，不可变更ID、性别
-        - 教师可以更新密码、联系方式、职称等，不可变更ID、性别
-        - 管理员可以按条件删除学生账号（例如毕业生）、删除教师账号（例如离职教师）、变更数据（例如转专业的学生）
-2. 设备管理模块
-    1. 录入新设备：
+        
+            > - ~~教师可以更新密码、联系方式、职称等，不可变更ID、性别~~
+        
+        - 管理员可以按条件删除学生账号（例如毕业生）、~~删除教师账号（例如离职教师）~~、变更数据（例如转专业的学生）
+    
+2. 设备管理模块（to do）
+    > 1. ~~录入新设备：~~
+    >     - ~~设备名称、型号、购入时间、价格、状态（正常/需要维修/维修中/报废）、所属实验室（例如大数据实验室、化学实验室）、能否借用（是/否）等~~
+    > 2. ~~查询设备：~~
+    >     - ~~按上述字段查询设备~~
+    > 3. ~~编辑设备信息：~~
+    >     - ~~例如维修时，能否借用项需要置否，状态更改为维修中~~
+    >     - ~~报废的设备需要删除~~
+    >     - ~~此项必须由教师或管理员更改，学生无权更改~~
+    
+    - 编辑设备（新建/删除与编辑已有）：
+    
+        - 要编辑一个设备，需要先查找，再编辑
+    
         - 设备名称、型号、购入时间、价格、状态（正常/需要维修/维修中/报废）、所属实验室（例如大数据实验室、化学实验室）、能否借用（是/否）等
-    2. 查询设备：
-        - 按上述字段查询设备
-    3. 编辑设备信息：
-        - 例如维修时，能否借用项需要置否，状态更改为维修中
-        - 报废的设备需要删除
-        - 此项必须由教师或管理员更改，学生无权更改
+        - 新建/编辑/移除
+    
 3. 设备借还模块（借还状态需要记载于另一单独表下）：
-    1. 学生申请使用
-    2. 教师审批
-    3. 学生归还（不经过审批）
+    - 学生申请使用
+    - ~~教师~~管理员审批
+    - 学生归还（不经过审批）
+    
 4. 通知系统：
-    1. 借用申请审批结果通知
-    2. 设备归还提醒
-    3. 设备维修完成通知
+    - 借用申请审批结果通知
+    
+    - 设备归还提醒
+    
+    - 设备维修完成通知
 
 ## 数据库设计
 
@@ -118,6 +143,101 @@ read_status     INT NOT NULL DEFAULT 0,         -- 阅读状态（0: 未读, 1: 
 FOREIGN KEY (user_id) REFERENCES users(user_id)
 ```
 
+### 7. `device_types` 表
+
+> 存放设备类型数据，用于对同类设备进行归类管理
+
+```plaintext
+type_id          INT AUTO_INCREMENT PRIMARY KEY, -- 类型唯一标识
+type_name        VARCHAR(100) NOT NULL UNIQUE,   -- 设备类型名称
+model            VARCHAR(100) NOT NULL,          -- 设备型号
+description      TEXT                            -- 设备描述
+```
+
+## ER 图
+
+```mermaid
+erDiagram
+    User ||--o{ BorrowRecord : borrows
+    User ||--o{ Notification : receives
+    User ||--o{ ApprovalRecord : approves
+    User ||--o{ Log : logs
+    Device ||--o{ BorrowRecord : borrowed_in
+    Device ||--o{ ApprovalRecord : approved_for
+    BorrowRecord ||--o{ ApprovalRecord : has_approval
+    BorrowRecord ||--|| Device : involves
+    BorrowRecord ||--|| User : involves
+    ApprovalRecord ||--|| User : involves
+    Notification ||--|| User : involves
+
+    User {
+        int user_id PK "用户唯一标识"
+        varchar username "用户名"
+        varchar pswd_hash "加密后的密码哈希值"
+        int user_type "用户类型"
+        varchar name "用户姓名"
+        int gender "性别"
+        varchar dpt "所属院系或专业"
+        varchar title "职称"
+        int status "用户状态"
+    }
+
+    Device {
+        int device_id PK "设备唯一标识"
+        varchar device_name "设备名称"
+        varchar model "设备型号"
+        date purchase_date "购入时间"
+        decimal price "设备价格"
+        int status "设备状态"
+        varchar lab "所属实验室"
+        int can_borrow "是否可以借用"
+    }
+
+    BorrowRecord {
+        int record_id PK "借还记录唯一标识"
+        int user_id FK "借用人ID"
+        int device_id FK "借用设备ID"
+        date borrow_date "借用日期"
+        date return_date "归还日期"
+        int approval_status "审批状态"
+    }
+
+    ApprovalRecord {
+        int approval_id PK "审批记录唯一标识"
+        int record_id FK "借还记录ID"
+        int approver_id FK "审批人ID"
+        date approval_date "审批日期"
+        text approval_comment "审批意见"
+    }
+
+    Notification {
+        int notification_id PK "通知唯一标识"
+        int user_id FK "接收通知的用户ID"
+        int type "通知类型"
+        text content "通知内容"
+        int related_id "相关记录ID"
+        timestamp created_at "通知创建时间"
+        int read_status "阅读状态"
+    }
+
+    Log {
+        int log_id PK "日志记录唯一标识"
+        int user_id FK "操作用户ID"
+        int action "操作类型"
+        text details "操作详情"
+        timestamp timestamp "操作发生的时间"
+    }
+
+    DeviceType {
+        int type_id PK "类型唯一标识"
+        varchar type_name "设备类型名称"
+        varchar model "设备型号"
+        text description "设备描述"
+    }
+```
+
+
+
 ## 网页设计
 
 ```mermaid
@@ -125,29 +245,46 @@ graph TD
 登录页-->注册页
 注册页-->主页
 登录页-->主页
-主页-->查询
-主页-->借用申请/归还
-主页-->设备编辑
-主页-->审批
+主页-->借用申请
+主页-->归还
 主页-->通知中心
-查询-->借用记录
-查询-->设备情况
+主页-->查询与编辑*
+主页-->审批*
+
 ```
 
 
 
-| **中文名**    | **英文名**          |
-| ------------- | ------------------- |
-| 登录页        | `login`             |
-| 注册页        | `sign_up`           |
-| 主页          | `index`             |
-| 查询          | `query`             |
-| 借用申请/归还 | `borrow_and_return` |
-| 设备编辑      | `devices`           |
-| 审批          | `review`            |
-| 借用记录      | `borrow_log`        |
-| 设备情况      | `device_status`     |
-| 通知中心      | `notifications`     |
+| **中文名**           | **英文名**      | **完成状态** |
+| -------------------- | --------------- | ------------ |
+| 登录页               | `login`         | ✔️            |
+| 注册页               | `sign_up`       | ✔️            |
+| 主页                 | `index`         | ✔️            |
+| 申请借用             | `borrow`        | ❌            |
+| 归还                 | `return`        | ❌            |
+| 通知中心             | `notifications` | ✔️            |
+| 查询与编辑（管理员） | `edit_devices`  | ❌            |
+| 审批（管理员）       | `review`        | ❌            |
+
+### 变动一
+
+不再单独提供查询页面
+
+可以注意到：
+
+- 借用本质上是**先查询可用设备**，再借用
+- 归还本质上是**先查询已借设备**，再归还
+- 编辑设备信息和删除设备本质上是**先查询全部设备**，再操作
+
+因此，**按条件查询是一个已经包含在大多数过程里的过程**，需要多次复用，无需独立存在。并且用户事实上不用关心全部的实验设备的信息，只需要关心如何对所预期的设备进行操作
+
+### 变动二
+
+新增设备最终纳入编辑设备，虽然新增设备不需要查询，但逻辑上与编辑已有设备的信息和删除已有设备是同一类操作
+
+### 变动三
+
+借用和归还现已拆分为两个页面。在变动一里提到过，两者需要查询的范围是不同的。先前合并两者并且与查询独立放置的举动是没有道理的
 
 
 
@@ -176,8 +313,6 @@ pip install -r requirements.txt
 
 
 ### 二、配置 MySQL 数据库
-
-输入以下代码创建数据库：
 
 ```sql
 -- 创建数据库
@@ -253,6 +388,66 @@ CREATE TABLE IF NOT EXISTS notifications (
     read_status INT NOT NULL DEFAULT 0,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+
+-- 创建设备类型表
+CREATE TABLE IF NOT EXISTS device_types (
+    type_id INT AUTO_INCREMENT PRIMARY KEY,
+    type_name VARCHAR(100) NOT NULL UNIQUE,
+    model VARCHAR(100) NOT NULL,
+    description TEXT
+);
+
+-- 修改设备表，添加类型关联
+ALTER TABLE devices
+ADD COLUMN type_id INT NOT NULL,
+ADD FOREIGN KEY (type_id) REFERENCES device_types(type_id);
+
+-- 启用事件调度器
+SET GLOBAL event_scheduler = ON;
+
+-- 创建更新设备类型的存储过程
+DELIMITER //
+CREATE PROCEDURE update_device_types()
+BEGIN
+    -- 将相同名称和型号的设备归类到同一类型
+    INSERT INTO device_types (type_name, model, description)
+    SELECT DISTINCT 
+        d.device_name,
+        d.model,
+        CONCAT(d.device_name, ' - ', d.model) as description
+    FROM devices d
+    LEFT JOIN device_types dt 
+        ON d.device_name = dt.type_name 
+        AND d.model = dt.model
+    WHERE dt.type_id IS NULL;
+
+    -- 更新设备表中的类型ID
+    UPDATE devices d
+    JOIN device_types dt 
+        ON d.device_name = dt.type_name 
+        AND d.model = dt.model
+    SET d.type_id = dt.type_id
+    WHERE d.type_id IS NULL;
+
+    -- 记录更新日志
+    INSERT INTO logs (user_id, action, details)
+    SELECT 
+        (SELECT user_id FROM users WHERE user_type = 3 LIMIT 1),
+        5,
+        CONCAT('自动更新设备类型: ', NOW());
+END //
+DELIMITER ;
+
+-- 创建每日更新事件
+CREATE EVENT IF NOT EXISTS daily_device_type_update
+ON SCHEDULE EVERY 1 DAY
+STARTS CURRENT_TIMESTAMP
+DO
+    CALL update_device_types();
+
+-- 修改日志表的操作类型定义
+ALTER TABLE logs
+MODIFY COLUMN action INT NOT NULL COMMENT '操作类型（1: 设备更新, 2: 用户删除, 3: 借用操作, 4: 归还操作, 5: 设备类型更新）';
 ```
 
 添加用户：
@@ -261,5 +456,13 @@ CREATE TABLE IF NOT EXISTS notifications (
 CREATE USER 'equipment_mgr'@'localhost' IDENTIFIED BY 'your_password_here';
 GRANT ALL PRIVILEGES ON equipment_mgr.* TO 'equipment_mgr'@'localhost';
 FLUSH PRIVILEGES;
+```
+
+
+
+### 三、运行
+
+```bash
+python app.py
 ```
 

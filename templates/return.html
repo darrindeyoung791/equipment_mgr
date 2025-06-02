@@ -1,0 +1,111 @@
+{% extends "layout.html" %}
+
+{% block title %}设备归还 - 实验设备管理系统{% endblock %}
+
+{% block content %}
+<div class="return-container">
+    <div class="content-header">
+        <h2>设备归还</h2>
+        <div class="content-actions">
+            <button id="refresh-btn" class="button secondary">
+                <span class="material-icons">refresh</span>
+                <span>刷新</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="device-lists" class="content-area">
+        <!-- 已借用设备列表 -->
+        <div class="device-section">
+            <h3>已借用的设备</h3>
+            <div id="borrowed-list" class="results-grid"></div>
+            <div id="borrowed-empty" class="empty-state hidden">
+                <span class="material-icons">inventory_2</span>
+                <p>暂无已借用的设备</p>
+            </div>
+        </div>
+
+        <!-- 待审批设备列表 -->
+        <div class="device-section">
+            <h3>待审批的申请</h3>
+            <div id="pending-list" class="results-grid"></div>
+            <div id="pending-empty" class="empty-state hidden">
+                <span class="material-icons">done_all</span>
+                <p>暂无待审批的申请</p>
+            </div>
+        </div>
+    </div>
+
+    <template id="borrowed-device-template">
+        <div class="device-card bordered">
+            <div class="card-main">
+                <div class="device-header">
+                    <div class="name-and-id">
+                        <h2 class="device-name"></h2>
+                        <span class="device-id"></span>
+                    </div>
+                    <span class="device-status badge in-use">使用中</span>
+                </div>
+                <div class="device-info">
+                    <div class="info-row">
+                        <span class="material-icons">qr_code_2</span>
+                        <span class="device-model"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="material-icons">science</span>
+                        <span class="device-lab"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="material-icons">event</span>
+                        <span class="borrow-date"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-actions">
+                <button class="button primary return-btn">
+                    <span class="material-icons">assignment_return</span>
+                    <span>归还</span>
+                </button>
+            </div>
+        </div>
+    </template>
+
+    <template id="pending-device-template">
+        <div class="device-card bordered">
+            <div class="card-main">
+                <div class="device-header">
+                    <div class="name-and-id">
+                        <h2 class="device-name"></h2>
+                        <span class="device-id"></span>
+                    </div>
+                    <span class="device-status badge pending">待审批</span>
+                </div>
+                <div class="device-info">
+                    <div class="info-row">
+                        <span class="material-icons">qr_code_2</span>
+                        <span class="device-model"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="material-icons">science</span>
+                        <span class="device-lab"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="material-icons">event</span>
+                        <span class="apply-date"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-actions">
+                <button class="button secondary cancel-btn">
+                    <span class="material-icons">close</span>
+                    <span>取消申请</span>
+                </button>
+            </div>
+        </div>
+    </template>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/return.js"></script>
+{% endblock %}

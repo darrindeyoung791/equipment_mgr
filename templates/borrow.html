@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+
+{% block title %}借用申请 - 实验设备管理系统{% endblock %}
+
+{% block content %}
+<div class="borrow-container">
+    <div class="content-header">
+        <h2>借用申请</h2>
+        <div class="content-actions">
+            <button id="refresh-btn" class="button secondary">
+                <span class="material-icons">refresh</span>
+                <span>刷新</span>
+            </button>
+        </div>
+    </div>
+    <div class="search-container">
+        <div class="search-form">
+            <div class="search-fields">
+                <div class="text-field select-field">
+                    <select id="search-field">
+                        <option value="type_name">设备类型</option>
+                        <option value="model">型号</option>
+                        <option value="lab">所属实验室</option>
+                    </select>
+                    <label for="search-field">搜索条件</label>
+                </div>
+                <div class="text-field">
+                    <input type="text" id="search-value" placeholder=" ">
+                    <label for="search-value">搜索内容</label>
+                </div>
+                <button id="search-btn" class="button primary" style="margin-bottom: 32px;">
+                    <span class="material-icons">search</span>
+                    <span>搜索</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="search-results" class="results-grid">
+            <div id="empty-state" class="empty-state hidden">
+                <span class="material-icons">search_off</span>
+                <p>未找到可借用的设备</p>
+            </div>
+        </div>
+
+        <template id="device-card-template">
+            <div class="device-card bordered">
+                <div class="card-main">
+                    <div class="device-header">
+                        <div class="name-and-id">
+                            <h2 class="device-name"></h2>
+                            <span class="device-id"></span>
+                        </div>
+                        <span class="device-status badge">可借用</span>
+                    </div>
+                    <div class="device-info">
+                        <div class="info-row">
+                            <span class="material-icons">qr_code_2</span>
+                            <span class="device-model"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="material-icons">science</span>
+                            <span class="device-lab"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="button primary borrow-btn">
+                        <span class="material-icons">add_box</span>
+                        <span>申请借用</span>
+                    </button>
+                </div>
+            </div>
+        </template>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/borrow.js"></script>
+{% endblock %}

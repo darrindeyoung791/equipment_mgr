@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+
+{% block title %}设备搜索 - 实验设备管理系统{% endblock %}
+
+{% block content %}
+<div class="search-container">
+    <div class="search-form">
+        <div class="search-fields">
+            <div class="text-field select-field">
+                <select id="search-field">
+                    <option value="type_name">设备类型</option>
+                    <option value="model">型号</option>
+                    <option value="lab">所属实验室</option>
+                </select>
+                <label for="search-field">搜索条件</label>
+            </div>
+            <div class="text-field">
+                <input type="text" id="search-value" list="search-options" placeholder=" ">
+                <datalist id="search-options"></datalist>
+                <label for="search-value">搜索内容</label>
+            </div>
+            <button id="search-btn" class="button primary">
+                <span class="material-icons">search</span>
+                <span>搜索</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="search-results" class="results-grid">
+        <div id="empty-state" class="empty-state hidden">
+            <span class="material-icons">search_off</span>
+            <p>未找到符合条件的设备</p>
+        </div>
+    </div>
+
+    <template id="device-card-template">
+        <div class="device-card">
+            <div class="device-header">
+                <h3 class="device-name"></h3>
+                <span class="device-status"></span>
+            </div>
+            <div class="device-info">
+                <div class="info-row">
+                    <span class="material-icons">qr_code_2</span>
+                    <span class="device-model"></span>
+                </div>
+                <div class="info-row">
+                    <span class="material-icons">science</span>
+                    <span class="device-lab"></span>
+                </div>
+                <div class="info-row">
+                    <span class="material-icons">event</span>
+                    <span class="device-purchase-date"></span>
+                </div>
+                <div class="info-row">
+                    <span class="material-icons">paid</span>
+                    <span class="device-price"></span>
+                </div>
+            </div>
+            <div class="device-actions">
+                <!-- 操作按钮将根据上下文动态添加 -->
+            </div>
+        </div>
+    </template>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/device_search.js"></script>
+{% endblock %}
