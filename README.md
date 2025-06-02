@@ -143,16 +143,6 @@ read_status     INT NOT NULL DEFAULT 0,         -- 阅读状态（0: 未读, 1: 
 FOREIGN KEY (user_id) REFERENCES users(user_id)
 ```
 
-### 7. `device_types` 表
-
-> 存放设备类型数据，用于对同类设备进行归类管理
-
-```plaintext
-type_id          INT AUTO_INCREMENT PRIMARY KEY, -- 类型唯一标识
-type_name        VARCHAR(100) NOT NULL UNIQUE,   -- 设备类型名称
-model            VARCHAR(100) NOT NULL,          -- 设备型号
-description      TEXT                            -- 设备描述
-```
 
 ## ER 图
 
@@ -389,65 +379,6 @@ CREATE TABLE IF NOT EXISTS notifications (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
--- 创建设备类型表
-CREATE TABLE IF NOT EXISTS device_types (
-    type_id INT AUTO_INCREMENT PRIMARY KEY,
-    type_name VARCHAR(100) NOT NULL UNIQUE,
-    model VARCHAR(100) NOT NULL,
-    description TEXT
-);
-
--- 修改设备表，添加类型关联
-ALTER TABLE devices
-ADD COLUMN type_id INT NOT NULL,
-ADD FOREIGN KEY (type_id) REFERENCES device_types(type_id);
-
--- 启用事件调度器
-SET GLOBAL event_scheduler = ON;
-
--- 创建更新设备类型的存储过程
-DELIMITER //
-CREATE PROCEDURE update_device_types()
-BEGIN
-    -- 将相同名称和型号的设备归类到同一类型
-    INSERT INTO device_types (type_name, model, description)
-    SELECT DISTINCT 
-        d.device_name,
-        d.model,
-        CONCAT(d.device_name, ' - ', d.model) as description
-    FROM devices d
-    LEFT JOIN device_types dt 
-        ON d.device_name = dt.type_name 
-        AND d.model = dt.model
-    WHERE dt.type_id IS NULL;
-
-    -- 更新设备表中的类型ID
-    UPDATE devices d
-    JOIN device_types dt 
-        ON d.device_name = dt.type_name 
-        AND d.model = dt.model
-    SET d.type_id = dt.type_id
-    WHERE d.type_id IS NULL;
-
-    -- 记录更新日志
-    INSERT INTO logs (user_id, action, details)
-    SELECT 
-        (SELECT user_id FROM users WHERE user_type = 3 LIMIT 1),
-        5,
-        CONCAT('自动更新设备类型: ', NOW());
-END //
-DELIMITER ;
-
--- 创建每日更新事件
-CREATE EVENT IF NOT EXISTS daily_device_type_update
-ON SCHEDULE EVERY 1 DAY
-STARTS CURRENT_TIMESTAMP
-DO
-    CALL update_device_types();
-
--- 修改日志表的操作类型定义
-ALTER TABLE logs
-MODIFY COLUMN action INT NOT NULL COMMENT '操作类型（1: 设备更新, 2: 用户删除, 3: 借用操作, 4: 归还操作, 5: 设备类型更新）';
 ```
 
 添加用户：
