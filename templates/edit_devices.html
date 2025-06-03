@@ -3,12 +3,192 @@
 {% block title %}设备管理 - 实验设备管理系统{% endblock %}
 
 {% block content %}
-<div class="devices-container">
+<div class="edit-devices-container">
     <div class="content-header">
         <h2>设备管理</h2>
+        <div class="content-actions">
+            <button id="refresh-btn" class="button secondary">
+                <span class="material-icons">refresh</span>
+                <span>刷新</span>
+            </button>
+            <button id="add-device-btn" class="button primary">
+                <span class="material-icons">add</span>
+                <span>新增设备</span>
+            </button>
+            <button id="batch-sql-btn" class="button danger">
+                <span class="material-icons">terminal</span>
+                <span>批量SQL</span>
+            </button>
+        </div>
     </div>
-    <div class="devices-content">
-        <!-- 设备管理功能将在后续实现 -->
+
+    <div class="search-container">
+        <div class="search-form">
+            <div class="search-fields">
+                <div class="text-field select-field">
+                    <select id="search-field">
+                        <option value="device_name" selected>设备名称</option>
+                        <option value="device_id">设备编号</option>
+                        <option value="model">型号</option>
+                        <option value="lab">所属实验室</option>
+                        <option value="price">价格</option>
+                        <option value="status">状态</option>
+                        <option value="purchase_date">购入日期</option>
+                    </select>
+                    <label for="search-field">搜索条件</label>
+                </div>
+                <div class="text-field">
+                    <input type="text" id="search-value" placeholder=" ">
+                    <label for="search-value">搜索内容</label>
+                </div>
+                <button id="search-btn" class="button primary" style="margin-bottom: 32px;">
+                    <span class="material-icons">search</span>
+                    <span>搜索</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="search-results" class="results-grid">
+            <div id="empty-state" class="empty-state hidden">
+                <span class="material-icons">search_off</span>
+                <p>未找到符合条件的设备</p>
+            </div>
+        </div>
+
+        <template id="device-card-template">
+            <div class="device-card bordered">
+                <div class="card-main">
+                    <div class="device-header">
+                        <div class="name-and-id">
+                            <h2 class="device-name"></h2>
+                            <span class="device-id"></span>
+                        </div>
+                        <span class="device-status badge"></span>
+                    </div>
+                    <div class="device-info">
+                        <div class="info-row">
+                            <span class="material-icons">qr_code_2</span>
+                            <span class="device-model"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="material-icons">science</span>
+                            <span class="device-lab"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="material-icons">monetization_on</span>
+                            <span class="device-price"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="material-icons">event</span>
+                            <span class="device-purchase-date"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="button secondary edit-btn">
+                        <span class="material-icons">edit</span>
+                        <span>编辑</span>
+                    </button>
+                    <button class="button danger delete-btn">
+                        <span class="material-icons">delete</span>
+                        <span>删除</span>
+                    </button>
+                </div>
+            </div>
+        </template>
+    </div>
+</div>
+
+<!-- 编辑对话框 -->
+<div id="edit-dialog" class="dialog hidden">
+    <div class="dialog-content">
+        <h3 id="dialog-title">编辑设备</h3>
+        <form id="edit-form">
+            <input type="hidden" id="edit-device-id">
+            <div class="form-fields">
+                <div class="text-field">
+                    <input type="text" id="edit-name" required>
+                    <label for="edit-name">设备名称</label>
+                </div>
+                <div class="text-field">
+                    <input type="text" id="edit-model" required>
+                    <label for="edit-model">型号</label>
+                </div>
+                <div class="text-field">
+                    <input type="text" id="edit-lab" required>
+                    <label for="edit-lab">所属实验室</label>
+                </div>
+                <div class="text-field">
+                    <input type="number" id="edit-price" step="0.01" min="0" required>
+                    <label for="edit-price">价格</label>
+                </div>
+                <div class="text-field">
+                    <input type="date" id="edit-purchase-date" required>
+                    <label for="edit-purchase-date">购入日期</label>
+                </div>
+                <div class="text-field select-field">
+                    <select id="edit-status" required>
+                        <option value="1">正常</option>
+                        <option value="2">需要维修</option>
+                        <option value="3">维修中</option>
+                        <option value="4">报废</option>
+                    </select>
+                    <label for="edit-status">状态</label>
+                </div>
+                <div class="text-field select-field">
+                    <select id="edit-can-borrow" required>
+                        <option value="1">是</option>
+                        <option value="0">否</option>
+                    </select>
+                    <label for="edit-can-borrow">是否可借用</label>
+                </div>
+            </div>
+            <div class="dialog-actions">
+                <button type="button" id="edit-cancel-btn" class="button secondary">取消</button>
+                <button type="submit" class="button primary" id="edit-submit-btn">保存</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 删除确认对话框 -->
+<div id="delete-dialog" class="dialog hidden">
+    <div class="dialog-content">
+        <h3>删除设备</h3>
+        <p class="dialog-message">删除设备后无法恢复，请输入设备型号以确认删除：</p>
+        <p class="device-model-display" style="font-weight: 500; margin: 8px 0;"></p>
+        <form id="delete-form">
+            <input type="hidden" id="delete-device-id">
+            <div class="form-fields">
+                <div class="text-field">
+                    <input type="text" id="delete-confirm" required>
+                    <label for="delete-confirm">设备型号</label>
+                </div>
+            </div>
+            <div class="dialog-actions">
+                <button type="button" id="delete-cancel-btn" class="button secondary">取消</button>
+                <button type="submit" class="button danger" id="confirm-delete-btn" disabled>删除</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 批量SQL对话框 -->
+<div id="sql-dialog" class="dialog hidden">
+    <div class="dialog-content">
+        <h3>批量SQL执行</h3>
+        <form id="sql-form">
+            <div class="form-fields">
+                <div class="text-field">
+                    <textarea id="sql-textarea" rows="8" style="width:100%;" required placeholder="输入多行SQL语句，每条以分号结尾"></textarea>
+                </div>
+            </div>
+            <div class="dialog-actions">
+                <button type="button" id="sql-cancel-btn" class="button secondary">取消</button>
+                <button type="submit" id="sql-submit-btn" class="button danger">执行</button>
+            </div>
+            <div id="sql-result" style="margin-top:8px;color:#d32f2f;"></div>
+        </form>
     </div>
 </div>
 {% endblock %}

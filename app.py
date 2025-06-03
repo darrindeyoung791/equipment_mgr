@@ -1,8 +1,10 @@
 from flask import Flask, render_template, jsonify, request, session, redirect, url_for
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
-import decimal  # 添加这一行
+import decimal
+import json  # 添加json导入
 from config import Config
+from flask import abort
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -257,6 +259,11 @@ def api_device_names():
         'values': names
     })
 
+def decimal_default(obj):
+    if isinstance(obj, decimal.Decimal):
+        return float(obj)
+    raise TypeError
+
 # API: 设备搜索
 @app.route('/api/devices/search')
 def api_search_devices():
@@ -266,47 +273,44 @@ def api_search_devices():
     params = []
     conditions = []
     
-    # 基础条件：只显示可借用的设备
-    conditions.append('status = 1 AND can_borrow = 1')
+    # 如果是非管理员，只显示可借用的设备
+    if session.get('user_type') == 1:
+        conditions.append('status = 1 AND can_borrow = 1')
     
     # 搜索条件
-    field = next((k for k in request.args.keys() if k in ['device_name', 'model', 'lab']), None)
+    field = next((k for k in request.args.keys() if k in ['device_id', 'device_name', 'model', 'lab', 'price', 'status']), None)
     if field and request.args.get(field):
         value = request.args.get(field)
-        conditions.append(f'{field} LIKE %s')
-        params.append(f'%{value}%')
+        if field in ['price', 'status']:
+            conditions.append(f'{field} = %s')
+            params.append(value)
+        else:
+            conditions.append(f'{field} LIKE %s')
+            params.append(f'%{value}%')
 
     try:
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        query = f'''
-            SELECT DISTINCT
-                device_id,
-                device_name,
-                model,
-                lab,
-                purchase_date,
-                price,
-                status,
-                can_borrow
-            FROM devices
-            WHERE {' AND '.join(conditions)}
+        
+        query = '''
+            SELECT * FROM devices
+            {where_clause}
             ORDER BY device_name, lab
-        '''
+        '''.format(where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else "")
         
         cursor.execute(query, params)
         devices = cursor.fetchall()
         
-        # 转换 Decimal 为 float
+        # 处理Decimal类型
         for device in devices:
             if 'price' in device and isinstance(device['price'], decimal.Decimal):
                 device['price'] = float(device['price'])
         
         cursor.close()
-        
         return jsonify({
             'success': True,
             'devices': devices
         })
+        
     except Exception as e:
         print(f"Search error: {str(e)}")
         return jsonify({
@@ -671,6 +675,251 @@ def api_review_request():
             'success': False,
             'message': str(e) if str(e) else '审批失败，请重试'
         })
+
+# API: 设备管理相关接口
+@app.route('/api/devices/all')
+def api_all_devices():
+    if 'user_id' not in session or session.get('user_type') == 1:
+        return jsonify({'success': False})
+    
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('''
+        SELECT * FROM devices ORDER BY device_name
+    ''')
+    devices = cursor.fetchall()
+    cursor.close()
+    
+    return jsonify({
+        'success': True,
+        'devices': devices
+    })
+
+@app.route('/api/devices/create', methods=['POST'])
+def api_create_device():
+    if 'user_id' not in session or session.get('user_type') == 1:
+        return jsonify({'success': False, 'message': '无权限进行此操作'})
+    
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'success': False, 'message': '未收到数据'})
+        
+        # 数据验证和清理
+        try:
+            cleaned_data = {
+                'device_name': str(data['device_name']).strip(),
+                'model': str(data['model']).strip(),
+                'lab': str(data['lab']).strip(),
+                'price': float(data['price']),
+                'purchase_date': data['purchase_date'],
+                'status': int(data['status']),
+                'can_borrow': int(data['can_borrow'])
+            }
+        except (KeyError, ValueError) as e:
+            return jsonify({
+                'success': False,
+                'message': f'数据验证失败: {str(e)}'
+            })
+
+        # 使用上下文管理器自动处理事务和关闭cursor
+        with mysql.connection.cursor(MySQLdb.cursors.DictCursor) as cursor:
+            try:
+                # 开始事务
+                cursor.execute('START TRANSACTION')
+                
+                # 1. 插入设备记录
+                insert_query = '''
+                    INSERT INTO devices 
+                    (device_name, model, lab, price, purchase_date, status, can_borrow)
+                    VALUES (%(name)s, %(model)s, %(lab)s, %(price)s, %(date)s, %(status)s, %(can_borrow)s)
+                '''
+                cursor.execute(insert_query, {
+                    'name': cleaned_data['device_name'],
+                    'model': cleaned_data['model'],
+                    'lab': cleaned_data['lab'],
+                    'price': cleaned_data['price'],
+                    'date': cleaned_data['purchase_date'],
+                    'status': cleaned_data['status'],
+                    'can_borrow': cleaned_data['can_borrow']
+                })
+                
+                # 2. 记录操作日志
+                device_id = cursor.lastrowid
+                log_query = '''
+                    INSERT INTO logs (user_id, action, details) 
+                    VALUES (%(user_id)s, 1, %(details)s)
+                '''
+                log_details = f"Created device ID {device_id}: {cleaned_data['device_name']}"
+                cursor.execute(log_query, {
+                    'user_id': session['user_id'],
+                    'details': log_details
+                })
+
+                # 提交事务
+                mysql.connection.commit()
+                
+                return jsonify({
+                    'success': True,
+                    'message': '设备创建成功',
+                    'device_id': device_id
+                })
+                
+            except Exception as e:
+                # 回滚事务
+                mysql.connection.rollback()
+                return jsonify({
+                    'success': False,
+                    'message': f'创建失败: {str(e)}'
+                })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'系统错误: {str(e)}'
+        })
+
+@app.route('/api/devices/update', methods=['POST'])
+def api_update_device():
+    if 'user_id' not in session or session.get('user_type') == 1:
+        return jsonify({'success': False, 'message': '无权限进行此操作'})
+    
+    try:
+        data = request.get_json()
+        if not data or 'device_id' not in data:
+            return jsonify({'success': False, 'message': '数据不完整'})
+
+        # 数据验证和清理
+        try:
+            device_id = int(data['device_id'])
+            cleaned_data = {
+                'device_name': str(data['device_name']).strip(),
+                'model': str(data['model']).strip(),
+                'lab': str(data['lab']).strip(),
+                'price': float(data['price']),
+                'purchase_date': data['purchase_date'],
+                'status': int(data['status']),
+                'can_borrow': int(data['can_borrow'])
+            }
+        except (KeyError, ValueError) as e:
+            return jsonify({
+                'success': False,
+                'message': f'数据验证失败: {str(e)}'
+            })
+
+        with mysql.connection.cursor(MySQLdb.cursors.DictCursor) as cursor:
+            try:
+                # 开始事务
+                cursor.execute('START TRANSACTION')
+
+                # 1. 获取原始设备信息用于日志
+                cursor.execute('SELECT * FROM devices WHERE device_id = %s FOR UPDATE', (device_id,))
+                old_device = cursor.fetchone()
+                if not old_device:
+                    mysql.connection.rollback()
+                    return jsonify({'success': False, 'message': '设备不存在'})
+
+                # 2. 更新设备信息
+                update_query = '''
+                    UPDATE devices 
+                    SET device_name = %(name)s,
+                        model = %(model)s,
+                        lab = %(lab)s,
+                        price = %(price)s,
+                        purchase_date = %(date)s,
+                        status = %(status)s,
+                        can_borrow = %(can_borrow)s
+                    WHERE device_id = %(id)s
+                '''
+                cursor.execute(update_query, {
+                    'name': cleaned_data['device_name'],
+                    'model': cleaned_data['model'],
+                    'lab': cleaned_data['lab'],
+                    'price': cleaned_data['price'],
+                    'date': cleaned_data['purchase_date'],
+                    'status': cleaned_data['status'],
+                    'can_borrow': cleaned_data['can_borrow'],
+                    'id': device_id
+                })
+
+                # 3. 记录变更日志
+                changes = []
+                for key in cleaned_data:
+                    if str(old_device.get(key, '')) != str(cleaned_data[key]):
+                        changes.append(f"{key}: {old_device.get(key, '')} -> {cleaned_data[key]}")
+                
+                if changes:
+                    log_query = '''
+                        INSERT INTO logs (user_id, action, details) 
+                        VALUES (%(user_id)s, 2, %(details)s)
+                    '''
+                    log_details = f"Updated device ID {device_id}: " + "; ".join(changes)
+                    cursor.execute(log_query, {
+                        'user_id': session['user_id'],
+                        'details': log_details
+                    })
+
+                # 提交事务
+                mysql.connection.commit()
+                return jsonify({'success': True, 'message': '更新成功'})
+
+            except Exception as e:
+                mysql.connection.rollback()
+                return jsonify({
+                    'success': False,
+                    'message': f'更新失败: {str(e)}'
+                })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'系统错误: {str(e)}'
+        })
+
+@app.route('/api/devices/delete/<int:device_id>', methods=['POST'])
+def api_delete_device(device_id):
+    if 'user_id' not in session or session.get('user_type') == 1:
+        return jsonify({'success': False, 'message': '无权限进行此操作'})
+    
+    try:
+        cursor = mysql.connection.cursor()
+        cursor.execute('DELETE FROM devices WHERE device_id = %s', (device_id,))
+        mysql.connection.commit()
+        cursor.close()
+        return jsonify({'success': True})
+    except Exception as e:
+        print(f"Delete device error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': '删除失败，请重试'
+        })
+
+# API: 管理员批量执行SQL
+@app.route('/api/admin/batch-sql', methods=['POST'])
+def api_batch_sql():
+    if 'user_id' not in session or session.get('user_type') == 1:
+        return jsonify({'success': False, 'message': '无权限'})
+    try:
+        data = request.get_json()
+        sql = data.get('sql', '')
+        if not sql:
+            return jsonify({'success': False, 'message': 'SQL不能为空'})
+        # 拆分多条SQL，防止注入
+        stmts = [s.strip() for s in sql.split(';') if s.strip()]
+        results = []
+        with mysql.connection.cursor() as cursor:
+            for stmt in stmts:
+                try:
+                    cursor.execute(stmt)
+                    if cursor.description:
+                        rows = cursor.fetchall()
+                        results.append(str(rows))
+                except Exception as e:
+                    mysql.connection.rollback()
+                    return jsonify({'success': False, 'message': f'执行失败: {str(e)}'})
+            mysql.connection.commit()
+        return jsonify({'success': True, 'result': '\n'.join(results) if results else '执行成功'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'系统错误: {str(e)}'})
 
 if __name__ == '__main__':
     app.run(debug=True)
