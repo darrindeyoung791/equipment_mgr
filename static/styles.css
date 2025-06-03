@@ -834,3 +834,161 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
     margin: 0 0 16px 0;
     color: rgba(0, 0, 0, 0.87);
 }
+
+.request-card {
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.request-card .card-header {
+    padding: 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.request-card .card-content {
+    padding: 16px;
+}
+
+.request-card .card-actions {
+    padding: 16px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    align-items: center;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.approve-group {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.name-and-id {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.name-and-id h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.name-and-id span {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 14px;
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.info-row .material-icons {
+    color: rgba(0, 0, 0, 0.54);
+    font-size: 20px;
+}
+
+.info-row:last-child {
+    margin-bottom: 0;
+}
+
+.approval-options {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.card-actions {
+    padding: 16px;
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.dialog-content {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    min-width: 320px;
+    max-width: 90%;
+}
+
+.dialog-content h3 {
+    margin: 0 0 16px 0;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.dialog-content p {
+    margin: 0 0 24px 0;
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.fab {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: var(--on-primary);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+    z-index: 90;
+}
+
+.fab:hover {
+    background-color: var(--on-primary-container);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.fab.hidden {
+    transform: scale(0);
+    opacity: 0;
+}
+
+@media (max-width: 1023px) {
+    .fab {
+        right: 16px;
+        bottom: 16px;
+    }
+}

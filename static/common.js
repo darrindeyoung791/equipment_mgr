@@ -65,4 +65,24 @@ document.addEventListener('DOMContentLoaded', function() {
             overlay?.classList.remove('visible');
         }
     });
+
+    // 返回顶部功能
+    const backToTop = document.getElementById('back-to-top');
+
+    // 滚动监听，显示/隐藏FAB
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > window.innerHeight / 2) {
+            backToTop.classList.remove('hidden');
+        } else {
+            backToTop.classList.add('hidden');
+        }
+    });
+
+    // 点击返回顶部
+    backToTop.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
 });

@@ -6,9 +6,87 @@
 <div class="review-container">
     <div class="content-header">
         <h2>申请审批</h2>
+        <div class="content-actions">
+            <button id="refresh-btn" class="button secondary">
+                <span class="material-icons">refresh</span>
+                <span>刷新</span>
+            </button>
+        </div>
     </div>
-    <div class="review-content">
-        <!-- 审批功能将在后续实现 -->
+
+    <div class="request-card bordered">
+        <div class="card-header">
+            <div class="user-info">
+                <div class="info-row">
+                    <span class="material-icons">person</span>
+                    <span id="user-name">未获取信息</span>
+                </div>
+                <div class="info-row">
+                    <span class="material-icons">school</span>
+                    <span id="user-department">未获取信息</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-content">
+            <div class="device-info">
+                <div class="name-and-id">
+                    <h3 id="device-name">未获取信息</h3>
+                    <span id="device-id"></span>
+                </div>
+                <div class="info-row">
+                    <span class="material-icons">inventory_2</span>
+                    <span>剩余可用：<span id="available-count">0</span>台</span>
+                </div>
+                <div class="info-row">
+                    <span class="material-icons">event</span>
+                    <span>申请时间：<span id="apply-time"></span></span>
+                </div>
+            </div>
+
+            <div class="approval-options">
+                <div class="text-field select-field">
+                    <select id="duration">
+                        <option value="1">1天</option>
+                        <option value="3">3天</option>
+                        <option value="7">1周</option>
+                        <option value="30">1个月</option>
+                        <option value="365">1年</option>
+                    </select>
+                    <label for="duration">借用时长</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-actions">
+            <div class="action-buttons">
+                <button id="reject-btn" class="button secondary">
+                    <span class="material-icons">close</span>
+                    <span>拒绝</span>
+                </button>
+                <button id="approve-btn" class="button primary">
+                    <span class="material-icons">check</span>
+                    <span>批准</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="empty-state" class="empty-state hidden">
+        <span class="material-icons">done_all</span>
+        <p>暂无待审批的申请</p>
+    </div>
+</div>
+
+<!-- 确认对话框 -->
+<div id="confirm-dialog" class="dialog hidden">
+    <div class="dialog-content">
+        <h3 id="confirm-title">确认操作</h3>
+        <p id="confirm-message">您确定要执行此操作吗？</p>
+        <div class="dialog-actions">
+            <button id="cancel-btn" class="button secondary">取消</button>
+            <button id="confirm-btn" class="button primary">确认</button>
+        </div>
     </div>
 </div>
 {% endblock %}

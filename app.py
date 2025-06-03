@@ -257,43 +257,6 @@ def api_device_names():
         'values': names
     })
 
-# API: 设备型号列表
-@app.route('/api/devices/models')
-def api_device_models():
-    if 'user_id' not in session:
-        return jsonify({'success': False})
-    
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('SELECT DISTINCT model FROM devices WHERE status = 1 AND can_borrow = 1')
-    models = [row['model'] for row in cursor.fetchall()]
-    cursor.close()
-    
-    return jsonify({
-        'success': True,
-        'values': models
-    })
-
-# API: 设备类型列表
-@app.route('/api/devices/types')
-def api_device_types():
-    if 'user_id' not in session:
-        return jsonify({'success': False})
-    
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('''
-        SELECT DISTINCT dt.type_name 
-        FROM device_types dt 
-        JOIN devices d ON dt.type_id = d.type_id 
-        WHERE d.status = 1 AND d.can_borrow = 1
-    ''')
-    types = [row['type_name'] for row in cursor.fetchall()]
-    cursor.close()
-    
-    return jsonify({
-        'success': True,
-        'values': types
-    })
-
 # API: 设备搜索
 @app.route('/api/devices/search')
 def api_search_devices():
@@ -304,36 +267,30 @@ def api_search_devices():
     conditions = []
     
     # 基础条件：只显示可借用的设备
-    conditions.append('d.status = 1 AND d.can_borrow = 1')
+    conditions.append('status = 1 AND can_borrow = 1')
     
     # 搜索条件
-    field = next((k for k in request.args.keys() if k in ['type_name', 'model', 'lab']), None)
+    field = next((k for k in request.args.keys() if k in ['device_name', 'model', 'lab']), None)
     if field and request.args.get(field):
         value = request.args.get(field)
-        if field == 'type_name':
-            conditions.append('dt.type_name LIKE %s')
-        elif field == 'model':
-            conditions.append('dt.model LIKE %s')
-        elif field == 'lab':
-            conditions.append('d.lab LIKE %s')
+        conditions.append(f'{field} LIKE %s')
         params.append(f'%{value}%')
 
     try:
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         query = f'''
             SELECT DISTINCT
-                d.device_id,
-                dt.type_name as device_name,
-                dt.model,
-                d.lab,
-                d.purchase_date,
-                d.price,
-                d.status,
-                d.can_borrow
-            FROM devices d
-            JOIN device_types dt ON d.type_id = dt.type_id
+                device_id,
+                device_name,
+                model,
+                lab,
+                purchase_date,
+                price,
+                status,
+                can_borrow
+            FROM devices
             WHERE {' AND '.join(conditions)}
-            ORDER BY dt.type_name, d.lab
+            ORDER BY device_name, lab
         '''
         
         cursor.execute(query, params)
@@ -366,6 +323,7 @@ def api_borrow_request():
     try:
         data = request.get_json()
         device_id = data.get('device_id')
+        is_admin = session.get('user_type') != 1  # 非学生用户都视为管理员
         
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         
@@ -392,27 +350,37 @@ def api_borrow_request():
                 WHERE device_id = %s
             ''', (device_id,))
 
-            # 创建借用记录
-            cursor.execute('''
-                INSERT INTO borrow_records (user_id, device_id, borrow_date, approval_status)
-                VALUES (%s, %s, CURDATE(), 1)
-            ''', (session['user_id'], device_id))
-            record_id = cursor.lastrowid
-
-            # 为管理员创建通知
-            cursor.execute('SELECT user_id FROM users WHERE user_type IN (2, 3)')
-            admins = cursor.fetchall()
-            
-            for admin in admins:
+            if is_admin:
+                # 管理员直接借用，创建已批准的借用记录
+                from datetime import datetime, timedelta
                 cursor.execute('''
-                    INSERT INTO notifications 
-                    (user_id, type, content, related_id)
-                    VALUES (%s, 1, %s, %s)
-                ''', (
-                    admin['user_id'],
-                    f'新的借用申请：{device["device_name"]}',
-                    record_id
-                ))
+                    INSERT INTO borrow_records 
+                    (user_id, device_id, borrow_date, approval_status, approver_id, return_deadline)
+                    VALUES (%s, %s, CURDATE(), 2, %s, DATE_ADD(CURDATE(), INTERVAL 7 DAY))
+                ''', (session['user_id'], device_id, session['user_id']))
+            else:
+                # 学生创建待审批的借用记录
+                cursor.execute('''
+                    INSERT INTO borrow_records 
+                    (user_id, device_id, borrow_date, approval_status)
+                    VALUES (%s, %s, CURDATE(), 1)
+                ''', (session['user_id'], device_id))
+                record_id = cursor.lastrowid
+
+                # 为管理员创建通知
+                cursor.execute('SELECT user_id FROM users WHERE user_type IN (2, 3)')
+                admins = cursor.fetchall()
+                
+                for admin in admins:
+                    cursor.execute('''
+                        INSERT INTO notifications 
+                        (user_id, type, content, related_id)
+                        VALUES (%s, 1, %s, %s)
+                    ''', (
+                        admin['user_id'],
+                        f'新的借用申请：{device["device_name"]}',
+                        record_id
+                    ))
 
             mysql.connection.commit()
             cursor.close()
@@ -435,14 +403,13 @@ def api_borrowed_devices():
     cursor.execute('''
         SELECT 
             d.device_id,
-            dt.type_name as device_name,
-            dt.model,
+            d.device_name,
+            d.model,
             d.lab,
             br.record_id,
             br.borrow_date
         FROM borrow_records br
         JOIN devices d ON br.device_id = d.device_id
-        JOIN device_types dt ON d.type_id = dt.type_id
         WHERE br.user_id = %s
         AND br.approval_status = 2
         AND br.return_date IS NULL
@@ -466,14 +433,13 @@ def api_pending_devices():
     cursor.execute('''
         SELECT 
             d.device_id,
-            dt.type_name as device_name,
-            dt.model,
+            d.device_name,
+            d.model,
             d.lab,
             br.record_id,
             br.borrow_date
         FROM borrow_records br
         JOIN devices d ON br.device_id = d.device_id
-        JOIN device_types dt ON d.type_id = dt.type_id
         WHERE br.user_id = %s
         AND br.approval_status = 1
         ORDER BY br.borrow_date DESC
@@ -575,6 +541,136 @@ def api_cancel_request():
             
     except Exception as e:
         return jsonify({'success': False, 'message': '取消失败，请重试'})
+
+@app.route('/api/borrow-requests/pending')
+def api_pending_requests():
+    if 'user_id' not in session or session.get('user_type') == 1:
+        return jsonify({'success': False})
+    
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    try:
+        # 获取所有待审批的申请
+        cursor.execute('''
+            SELECT 
+                br.record_id,
+                u.name as user_name,
+                u.dpt as department,
+                d.device_id,
+                d.device_name,
+                br.borrow_date as apply_time,
+                (
+                    SELECT COUNT(*) 
+                    FROM devices d2 
+                    WHERE d2.device_name = d.device_name 
+                    AND d2.status = 1 
+                    AND d2.can_borrow = 1
+                ) as available_count
+            FROM borrow_records br
+            JOIN users u ON br.user_id = u.user_id
+            JOIN devices d ON br.device_id = d.device_id
+            WHERE br.approval_status = 1
+            ORDER BY br.borrow_date ASC
+        ''')
+        requests = cursor.fetchall()
+        cursor.close()
+        
+        return jsonify({
+            'success': True,
+            'requests': requests
+        })
+    except Exception as e:
+        cursor.close()
+        print(f"Error fetching requests: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': '获取申请列表失败'
+        })
+
+@app.route('/api/borrow-requests/review', methods=['POST'])
+def api_review_request():
+    if 'user_id' not in session or session.get('user_type') == 1:
+        return jsonify({'success': False, 'message': '无权限进行此操作'})
+    
+    try:
+        data = request.get_json()
+        record_id = data.get('record_id')
+        approved = data.get('approved')
+        duration = data.get('duration')
+        
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        
+        try:
+            cursor.execute('START TRANSACTION')
+            
+            # 获取申请信息
+            cursor.execute('''
+                SELECT br.*, d.device_id, d.device_name, u.user_id
+                FROM borrow_records br
+                JOIN devices d ON br.device_id = d.device_id
+                JOIN users u ON br.user_id = u.user_id
+                WHERE br.record_id = %s AND br.approval_status = 1
+                FOR UPDATE
+            ''', (record_id,))
+            
+            request_info = cursor.fetchone()
+            if not request_info:
+                raise Exception('申请记录不存在或已被处理')
+
+            if approved:
+                # 批准申请
+                from datetime import datetime, timedelta
+                duration = int(duration)
+                return_deadline = (datetime.now() + timedelta(days=duration)).strftime('%Y-%m-%d')
+                
+                cursor.execute('''
+                    UPDATE borrow_records 
+                    SET approval_status = 2,
+                        return_deadline = %s,
+                        approver_id = %s
+                    WHERE record_id = %s
+                ''', (return_deadline, session['user_id'], record_id))
+            else:
+                # 拒绝申请
+                cursor.execute('''
+                    UPDATE borrow_records 
+                    SET approval_status = 3,
+                        approver_id = %s
+                    WHERE record_id = %s
+                ''', (session['user_id'], record_id))
+                
+                # 恢复设备可借用状态
+                cursor.execute('''
+                    UPDATE devices 
+                    SET can_borrow = 1
+                    WHERE device_id = %s
+                ''', (request_info['device_id'],))
+
+            # 创建通知
+            notification_type = 1 if approved else 2
+            content = f'您申请借用的{request_info["device_name"]}已{"获批准" if approved else "被拒绝"}'
+            if approved:
+                content += f'，使用期限{duration}天'
+            
+            cursor.execute('''
+                INSERT INTO notifications (user_id, type, content, related_id)
+                VALUES (%s, %s, %s, %s)
+            ''', (request_info['user_id'], notification_type, content, record_id))
+
+            mysql.connection.commit()
+            return jsonify({'success': True})
+            
+        except Exception as e:
+            mysql.connection.rollback()
+            raise e
+        finally:
+            cursor.close()
+            
+    except Exception as e:
+        print(f"Review error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': str(e) if str(e) else '审批失败，请重试'
+        })
 
 if __name__ == '__main__':
     app.run(debug=True)

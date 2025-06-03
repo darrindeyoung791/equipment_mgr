@@ -101,7 +101,9 @@ user_id          INT NOT NULL,                   -- 借用人ID，关联到`user
 device_id        INT NOT NULL,                   -- 借用设备ID，关联到`devices`表
 borrow_date      DATE NOT NULL,                  -- 借用日期
 return_date      DATE,                           -- 归还日期，如果尚未归还则为NULL
+return_deadline  DATE,                           -- 归还截止日期
 approval_status  INT NOT NULL                    -- 审批状态（1: 待审批, 2: 已批准, 3: 已拒绝）
+approver_id      INT,                            -- 审批人ID，关联到`users`表
 ```
 
 ### 4. `approval_records` 表
@@ -341,9 +343,12 @@ CREATE TABLE IF NOT EXISTS borrow_records (
     device_id INT NOT NULL,
     borrow_date DATE NOT NULL,
     return_date DATE,
+    return_deadline DATE,
     approval_status INT NOT NULL,
+    approver_id INT,
     FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (device_id) REFERENCES devices(device_id)
+    FOREIGN KEY (device_id) REFERENCES devices(device_id),
+    FOREIGN KEY (approver_id) REFERENCES users(user_id)
 );
 
 -- 创建 approval_records 表
