@@ -613,7 +613,7 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
 .top-bar .button.secondary {
     background-color: rgba(255, 255, 255, 0.1);
     color: var(--on-primary);
-    min-width: 90px  /* 添加最小宽度 */
+    min-width: 90px;  /* 添加最小宽度 */
     white-space: nowrap;  /* 防止文字换行 */
 }
 
