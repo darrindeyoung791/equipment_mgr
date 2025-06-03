@@ -298,7 +298,7 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-当前开发环境是 Windows 11 23H2 下的 Python 3.9，如果在其他环境中部署出现错误，请提 issue 或者咨询 AI。
+当前开发环境是 Windows 11 23H2 下的 Python 3.9，如果在其他环境中部署出现错误，请提 issue 或者咨询 AI
 
 
 
