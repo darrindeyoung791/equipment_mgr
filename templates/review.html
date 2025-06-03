@@ -16,24 +16,24 @@
 
     <div class="request-card bordered">
         <div class="card-header">
-            <div class="user-info">
-                <div class="info-row">
-                    <span class="material-icons">person</span>
-                    <span id="user-name">未获取信息</span>
-                </div>
-                <div class="info-row">
-                    <span class="material-icons">school</span>
-                    <span id="user-department">未获取信息</span>
-                </div>
+            <div class="name-and-id" style="align-items: center;">
+                <h3 id="device-name">未获取信息</h3>
+                <span id="device-id"></span>
             </div>
         </div>
 
         <div class="card-content">
+            <!-- 申请人信息行 -->
+            <div class="info-row" style="margin-bottom: 12px;">
+                <span class="material-icons">person</span>
+                <span id="user-name">未获取信息</span>
+                <span style="margin: 0 8px; color: #bbb;">|</span>
+                <span class="material-icons">school</span>
+                <span id="user-department">未获取信息</span>
+            </div>
+
+            <!-- 设备信息 -->
             <div class="device-info">
-                <div class="name-and-id">
-                    <h3 id="device-name">未获取信息</h3>
-                    <span id="device-id"></span>
-                </div>
                 <div class="info-row">
                     <span class="material-icons">inventory_2</span>
                     <span>剩余可用：<span id="available-count">0</span>台</span>
