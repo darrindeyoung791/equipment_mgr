@@ -394,7 +394,30 @@ FLUSH PRIVILEGES;
 
 
 
-### 三、运行
+### 三、配置 .env 文件
+
+项目支持通过`.env`文件配置数据库连接等敏感信息。请在项目根目录下新建`.env`文件，内容示例：
+
+```
+# .env 示例
+MYSQL_HOST=localhost
+MYSQL_USER=equipment_mgr
+MYSQL_PASSWORD=your_password_here
+MYSQL_DB=equipment_mgr
+MYSQL_PORT=3306
+SECRET_KEY=your_secret_key_here
+```
+
+- `MYSQL_HOST`：数据库主机地址，通常为`localhost`
+- `MYSQL_USER`：数据库用户名
+- `MYSQL_PASSWORD`：数据库密码
+- `MYSQL_DB`：数据库名
+- `MYSQL_PORT`：端口，默认3306
+- `SECRET_KEY`：Flask会话密钥，请自行设置为随机字符串
+
+确保`.env`文件已被`.gitignore`忽略，避免敏感信息泄露。
+
+### 四、运行
 
 ```bash
 python app.py
