@@ -148,6 +148,13 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('delete-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const deviceId = document.getElementById('delete-device-id').value;
+            
+            // 显示加载状态
+            const confirmBtn = document.getElementById('confirm-delete-btn');
+            const originalText = confirmBtn.innerHTML;
+            confirmBtn.innerHTML = '<span class="material-icons">hourglass_empty</span><span>处理中</span>';
+            confirmBtn.disabled = true;
+
             fetch(`/api/devices/delete/${deviceId}`, {
                 method: 'POST'
             })
@@ -159,6 +166,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     alert(data.message || '删除失败，请重试');
                 }
+            })
+            .catch(error => {
+                alert('删除失败，请重试');
+            })
+            .finally(() => {
+                // 恢复按钮状态
+                confirmBtn.innerHTML = originalText;
+                confirmBtn.disabled = false;
             });
         });
     }

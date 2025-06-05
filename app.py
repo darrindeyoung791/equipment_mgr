@@ -881,13 +881,50 @@ def api_delete_device(device_id):
         return jsonify({'success': False, 'message': '无权限进行此操作'})
     
     try:
-        cursor = mysql.connection.cursor()
-        cursor.execute('DELETE FROM devices WHERE device_id = %s', (device_id,))
-        mysql.connection.commit()
-        cursor.close()
-        return jsonify({'success': True})
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        
+        # 开始事务
+        cursor.execute('START TRANSACTION')
+        
+        try:
+            # 1. 检查是否有未完成的借用记录
+            cursor.execute('''
+                SELECT COUNT(*) as count 
+                FROM borrow_records 
+                WHERE device_id = %s 
+                AND return_date IS NULL 
+                AND approval_status = 2
+            ''', (device_id,))
+            
+            if cursor.fetchone()['count'] > 0:
+                raise Exception('该设备有未完成的借用记录，无法删除')
+
+            # 2. 删除相关的所有记录（已完成的借用记录和审批记录）
+            cursor.execute('DELETE FROM approval_records WHERE record_id IN (SELECT record_id FROM borrow_records WHERE device_id = %s)', (device_id,))
+            cursor.execute('DELETE FROM borrow_records WHERE device_id = %s', (device_id,))
+            
+            # 3. 记录操作日志
+            cursor.execute('''
+                INSERT INTO logs (user_id, action, details) 
+                VALUES (%s, 3, %s)
+            ''', (session['user_id'], f'Deleted device ID: {device_id}'))
+
+            # 4. 删除设备
+            cursor.execute('DELETE FROM devices WHERE device_id = %s', (device_id,))
+            
+            mysql.connection.commit()
+            return jsonify({'success': True})
+            
+        except Exception as e:
+            mysql.connection.rollback()
+            return jsonify({
+                'success': False,
+                'message': str(e)
+            })
+        finally:
+            cursor.close()
+            
     except Exception as e:
-        print(f"Delete device error: {str(e)}")
         return jsonify({
             'success': False,
             'message': '删除失败，请重试'
