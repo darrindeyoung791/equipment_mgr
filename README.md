@@ -11,7 +11,23 @@
 | <img src="https://avatars.githubusercontent.com/u/155410580?s=130&v=4" style="zoom:25%;" /> | [ying8502](https://github.com/ying8502)                 | 参与者；<br />数据库结构设计；<br />网页架构设计。           |
 | <img src="https://avatars.githubusercontent.com/u/214098553?s=130&v=4" style="zoom:25%;" /> | [Frozentime3](https://github.com/Frozentime3)           | 参与者；<br />资料搜集；<br />文档维护。                     |
 
+## 效果图
 
+以下为部分页面截图，更多示例图片见`/img`下的图片
+
+<div align="center">
+
+![登录页](img/图片1.png)
+<br>
+![主页](img/图片4.png)
+<br>
+![设备管理](img/图片9.png)
+<br>
+![借用申请](img/图片5.png)
+<br>
+![审批界面](img/图片13.png)
+
+</div>
 
 ## 全部功能模块
 
