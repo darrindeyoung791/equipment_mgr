@@ -6,10 +6,10 @@
 
 ## Contributors
 
-| <img src="https://avatars.githubusercontent.com/u/205942924?v=4" style="zoom:23%;" /> | [darrindeyoung791](https://github.com/darrindeyoung791) | 项目发起者，组长；<br />数据库结构设计；<br />网页界面设计；<br />版本管理；<br />文档维护。 |
-| :----------------------------------------------------------: | ------------------------------------------------------- | ------------------------------------------------------------ |
-| <img src="https://avatars.githubusercontent.com/u/155410580?s=130&v=4" style="zoom:25%;" /> | [ying8502](https://github.com/ying8502)                 | 参与者；<br />数据库结构设计；<br />网页架构设计。           |
-| <img src="https://avatars.githubusercontent.com/u/214098553?s=130&v=4" style="zoom:25%;" /> | [Frozentime3](https://github.com/Frozentime3)           | 参与者；<br />资料搜集；<br />文档维护。                     |
+| [darrindeyoung791](https://github.com/darrindeyoung791) | 项目发起者，组长；数据库结构设计；网页界面设计；版本管理；文档维护。 |
+| ------------------------------------------------------- | ------------------------------------------------------------ |
+| [ying8502](https://github.com/ying8502)                 | 参与者；数据库结构设计；网页架构设计。                       |
+| [Frozentime3](https://github.com/Frozentime3)           | 参与者；资料搜集；文档维护。                                 |
 
 ## 效果图
 
